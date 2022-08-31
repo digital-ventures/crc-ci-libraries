@@ -40,8 +40,11 @@ jobs:
       - name: BuildTools
         uses: yokawasa/action-setup-kube-tools@v0.7.1
         with:
-          kustomize: '4.5.7'
-          skaffold: '1.39.1'
+          kustomize: '3.9.1'
+          skaffold: '1.17.2'
+          helm: '3.9.4'
+          kubectl: '1.17.8'
+          yq: '4.7.1'
 
 ##### CodeScan
       - name: SonarQubeScan
