@@ -1,0 +1,35 @@
+on:
+  workflow_call:
+    branches:
+      - 'deployment'
+      - '**release**'
+    tags-ignore:
+      - ""
+      - '!**Gradle Release Plugin**'
+  pull_request_target:
+    branches-ignore:
+      - 'deployment'
+  push: 
+    paths:
+      - gradle/**/*
+      - manifests/**/*
+      - src/**/*
+      - build.gradle.kts
+      - gradle.properties
+      - gradlew
+      - gradlew.bat
+      - settings.gradle.kts
+      - skaffold.yml
+
+jobs:
+  # test:
+  #   name: test
+  #   uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-release.yaml@master
+  #   if: '($TRIGGER_TARGET == "release" || $TRIGGER_TARGET == "master" || $TRIGGER_TARGET =~ /.*CRC.*/ || $TRIGGER_TARGET =~ /.*production\/.*/ )'
+  #   secrets: inherit
+  release:
+    name: release
+    uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-release.yaml@master
+    # if: github.event_name != 'pull_request'
+    secrets: inherit
+
