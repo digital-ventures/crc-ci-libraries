@@ -1,6 +1,7 @@
 on:
   workflow_call:
   workflow_run:
+    workflows: ["Build"]
     branches:
       - 'deployment'
       - '**release**'
