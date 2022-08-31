@@ -52,7 +52,8 @@ jobs:
 
 ##### Test Before Release
       - name: PrepareRelease
-        if: "${{ github.ref_name == 'release' }} && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))"
+        # if: "${{ github.ref_name == 'release' }} && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))"
+        if: "${{ github.ref_name == 'release' }}"
         run: |
           git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ github.ref_name }}
