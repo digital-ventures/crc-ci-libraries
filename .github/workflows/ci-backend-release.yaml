@@ -37,6 +37,12 @@ jobs:
           username: ${{ secrets.CRC_ACR_USER }}
           password: ${{ secrets.CRC_ACR_TOKEN }}
 
+      - name: BuildTools
+        uses: yokawasa/action-setup-kube-tools@v0.7.1
+        with:
+          kustomize: '4.5.7'
+          skaffold: '1.39.1'
+
 ##### CodeScan
       - name: SonarQubeScan
         if: "contains(github.ref_name, 'SONAR')"
@@ -63,38 +69,12 @@ jobs:
           ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
 ##### Release overlay/dev
-      # - name: BuildContainerSnapshotImage
-      #   if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
-      #   run: |
-      #     echo "START BuildContainerSnapshotImage"
-      #     curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-      #     mv skaffold /usr/local/bin/
-      #     skaffold build -q > build.json
-      #     echo "FINISH BuildContainerSnapshotImage"
-      #     IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
-      #     IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
-      #     IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
-      #     SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
-      #     echo IMG_NAME="${IMG_NAME}" >> variables
-      #     echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
-      #     echo IMG_VERSION="${IMG_VERSION}" >> variables
-      #     echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-
-      - name: Setup Minikube
-        if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
-        uses: hiberbee/github-action-minikube@1.5.0
-
       - name: BuildContainerSnapshotImage
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
-        uses: hiberbee/github-action-skaffold@1.19.0
-        with:
-          command: build
-          output: build.json
-          skaffold-version: 1.39.1
-
-      - name: BuildContainerSnapshotImageOutput
-        if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
+          echo "START BuildContainerSnapshotImage"
+          skaffold build -q > build.json
+          echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
@@ -115,7 +95,7 @@ jobs:
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd app-deployment
           git checkout nonprd
@@ -134,8 +114,6 @@ jobs:
         if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
         run: |
           echo "START BuildContainerReleaseImage"
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          mv skaffold /usr/local/bin/
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
           echo "FINISH BuildContainerReleaseImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -157,7 +135,7 @@ jobs:
         if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd app-deployment
           git checkout nonprd
