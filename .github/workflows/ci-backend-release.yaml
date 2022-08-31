@@ -21,7 +21,8 @@ jobs:
         run: |
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
           git submodule update --remote -f --init
-          git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common 
+          git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
 
       # - name: Setup Gradle
       #   uses: gradle/gradle-build-action@v2
@@ -45,7 +46,8 @@ jobs:
       - name: JustTest
         if: "${{ github.ref_name == 'release' }} || ${{ github.ref_name == 'master' }} || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' }}"
         run: |
-          ./gradlew clean test
+          echo "HELLO"
+          # ./gradlew clean test
 
 ##### Test Before Release
       - name: PrepareRelease
