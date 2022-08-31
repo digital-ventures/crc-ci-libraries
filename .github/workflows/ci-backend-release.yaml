@@ -36,10 +36,9 @@ jobs:
       - name: JustTest
         if: "${{ github.ref_name == 'release' }} || ${{ github.ref_name == 'master' }} || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' }}"
         run: |
-          git add -A
-          git commit -a -m "[Gradle Release Plugin]"
-          git pull && git push 
-          ./gradlew -x test -Prelease.useAutomaticVersion=true release
+          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          git submodule update --remote -f --init
+          ./gradlew clean test
 
 ##### Test Before Release
       - name: PrepareRelease
