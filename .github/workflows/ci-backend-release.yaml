@@ -40,10 +40,10 @@ jobs:
       - name: BuildTools
         uses: yokawasa/action-setup-kube-tools@v0.7.1
         with:
-          kustomize: '3.9.1'
-          skaffold: '1.17.2'
+          kustomize: '3.9.1' #'4.5.7'
+          skaffold: '1.17.2' #'1.39.1'
           helm: '3.9.4'
-          kubectl: '1.17.8'
+          kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
 
 ##### CodeScan
@@ -76,6 +76,7 @@ jobs:
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START BuildContainerSnapshotImage"
+          skaffold build
           skaffold build -q > build.json
           echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
