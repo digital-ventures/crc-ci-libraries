@@ -14,6 +14,11 @@ jobs:
           submodules: recursive
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
+      - name: GitSubmodule
+        run: |
+          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          git submodule update --remote -f --init
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
@@ -36,8 +41,8 @@ jobs:
       - name: JustTest
         if: "${{ github.ref_name == 'release' }} || ${{ github.ref_name == 'master' }} || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' }}"
         run: |
-          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
-          git submodule update --remote -f --init
+          # git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          # git submodule update --remote -f --init
           ./gradlew clean test
 
 ##### Test Before Release
@@ -46,8 +51,8 @@ jobs:
         run: |
           git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ github.ref_name }}
-          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
-          git submodule update --remote -f --init
+          # git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          # git submodule update --remote -f --init
           git add -A
           git commit -a -m "Update deployment image [${{ github.ref_name }}]"
           git pull && git push 
@@ -60,8 +65,8 @@ jobs:
           echo "START BuildContainerSnapshotImage"
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           sudo install skaffold /usr/local/bin/
-          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
-          git submodule update --remote -f --init
+          # git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          # git submodule update --remote -f --init
           skaffold build -q > build.json
           echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -105,9 +110,8 @@ jobs:
           echo "START BuildContainerReleaseImage"
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           sudo install skaffold /usr/local/bin/
-          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-          git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
-          git submodule update --remote -f --init
+          # git submodule add --force https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git
+          # git submodule update --remote -f --init
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
           echo "FINISH BuildContainerReleaseImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
