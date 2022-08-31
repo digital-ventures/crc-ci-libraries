@@ -86,8 +86,6 @@ jobs:
           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
           echo IMG_VERSION="${IMG_VERSION}" >> variables
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-          cat variables
-          cat build.json
       # - name: UploadBuildContainerSnapshotImageArtifact
       #   if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
       #   uses: actions/upload-artifact@v3
@@ -99,11 +97,11 @@ jobs:
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
+          source variables
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd
-          source variables
           cd overlay/dev
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
@@ -139,11 +137,11 @@ jobs:
         if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
+          source variables
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd
-          source variables
           cd overlay/sit
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
