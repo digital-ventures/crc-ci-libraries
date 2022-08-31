@@ -113,7 +113,8 @@ jobs:
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
+        # if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
+        if: "${{ github.ref_name == 'release' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START BuildContainerReleaseImage"
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
@@ -134,7 +135,8 @@ jobs:
       #     path: variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
+        # if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
+        if: "${{ github.ref_name == 'release' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
           source variables
