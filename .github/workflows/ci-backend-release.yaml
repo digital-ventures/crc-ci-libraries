@@ -86,7 +86,7 @@ jobs:
         with:
           command: build
           output: build.json
-          filename: skaffold.yml
+          skaffold-version: 1.39.1
 
       - name: BuildContainerSnapshotImageOutput
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
