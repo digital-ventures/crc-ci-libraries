@@ -85,7 +85,8 @@ jobs:
         uses: hiberbee/github-action-skaffold@1.19.0
         with:
           command: build
-          file-output: build.json
+          output: build.json
+          filename: skaffold.yml
 
       - name: BuildContainerSnapshotImageOutput
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
