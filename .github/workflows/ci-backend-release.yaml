@@ -76,7 +76,6 @@ jobs:
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
           echo "START BuildContainerSnapshotImage"
-          skaffold build
           skaffold build -q > build.json
           echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -87,7 +86,8 @@ jobs:
           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
           echo IMG_VERSION="${IMG_VERSION}" >> variables
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-
+          cat variables
+          cat build.json
       # - name: UploadBuildContainerSnapshotImageArtifact
       #   if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
       #   uses: actions/upload-artifact@v3
@@ -101,7 +101,7 @@ jobs:
           echo "START UpdateDeploymentSnapshotTemplate"
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          cd app-deployment
+          cd crc-app-deployment
           git checkout nonprd
           source variables
           cd overlay/dev
@@ -141,7 +141,7 @@ jobs:
           echo "START UpdateDeploymentReleaseTemplate"
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          cd app-deployment
+          cd crc-app-deployment
           git checkout nonprd
           source variables
           cd overlay/sit
