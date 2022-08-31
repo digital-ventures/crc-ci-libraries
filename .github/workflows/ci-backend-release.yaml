@@ -63,14 +63,33 @@ jobs:
           ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
 ##### Release overlay/dev
+      # - name: BuildContainerSnapshotImage
+      #   if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
+      #   run: |
+      #     echo "START BuildContainerSnapshotImage"
+      #     curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+      #     mv skaffold /usr/local/bin/
+      #     skaffold build -q > build.json
+      #     echo "FINISH BuildContainerSnapshotImage"
+      #     IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+      #     IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+      #     IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+      #     SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+      #     echo IMG_NAME="${IMG_NAME}" >> variables
+      #     echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+      #     echo IMG_VERSION="${IMG_VERSION}" >> variables
+      #     echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
+          
       - name: BuildContainerSnapshotImage
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
+        uses: hiberbee/github-action-skaffold@1.19.0
+        with:
+          command: build
+          file-output: build.json
+
+      - name: BuildContainerSnapshotImageOutput
+        if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         run: |
-          echo "START BuildContainerSnapshotImage"
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          mv skaffold /usr/local/bin/
-          skaffold build -q > build.json
-          echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
