@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "START BuildContainerSnapshotImage"
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          sudo install skaffold /usr/local/bin/
+          mv skaffold /usr/local/bin/
           skaffold build -q > build.json
           echo "FINISH BuildContainerSnapshotImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -111,7 +111,7 @@ jobs:
         run: |
           echo "START BuildContainerReleaseImage"
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          sudo install skaffold /usr/local/bin/
+          mv skaffold /usr/local/bin/
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
           echo "FINISH BuildContainerReleaseImage"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
