@@ -79,7 +79,11 @@ jobs:
       #     echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
       #     echo IMG_VERSION="${IMG_VERSION}" >> variables
       #     echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-          
+
+      - name: Setup Minikube
+        if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
+        uses: hiberbee/github-action-minikube@1.5.0
+
       - name: BuildContainerSnapshotImage
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
         uses: hiberbee/github-action-skaffold@1.19.0
