@@ -63,7 +63,7 @@ jobs:
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage
-        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START BuildContainerSnapshotImage"
           skaffold build -q > build.json
@@ -78,7 +78,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentSnapshotTemplate
-        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
@@ -94,35 +94,35 @@ jobs:
           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           echo "FINISH UpdateDeploymentSnapshotTemplate"
 
-##### Release overlay/sit
-      - name: BuildContainerReleaseImage
-        if: github.ref == 'refs/pull/release' && contains( github.ref, 'refs/heads/tag' )
-        run: |
-          echo "START BuildContainerReleaseImage"
-          skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
-          echo "FINISH BuildContainerReleaseImage"
-          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
-          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
-          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
-          SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
-          echo IMG_NAME="${IMG_NAME}" >> variables
-          echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
-          echo IMG_VERSION="${IMG_VERSION}" >> variables
-          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
+# ##### Release overlay/sit
+#       - name: BuildContainerReleaseImage
+#         if: github.base_ref == 'deployment' && contains( github.ref, 'refs/heads/tag' )
+#         run: |
+#           echo "START BuildContainerReleaseImage"
+#           skaffold build -q --tag ${{ github.ref_name }} > build.json
+#           echo "FINISH BuildContainerReleaseImage"
+#           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+#           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+#           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+#           SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+#           echo IMG_NAME="${IMG_NAME}" >> variables
+#           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+#           echo IMG_VERSION="${IMG_VERSION}" >> variables
+#           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
-      - name: UpdateDeploymentReleaseTemplate
-        if: github.ref == 'refs/pull/release' && contains( github.ref, 'refs/heads/tag' )
-        run: |
-          echo "START UpdateDeploymentReleaseTemplate"
-          source variables
-          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          cd crc-app-deployment
-          git checkout nonprd
-          cd overlay/sit
-          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
-          cd ../..
-          git add -A
-          git commit -a -m "[Gradle Release Plugin]"
-          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          echo "FINISH UpdateDeploymentReleaseTemplate"
+#       - name: UpdateDeploymentReleaseTemplate
+#         if: github.ref == 'refs/pull/release' && contains( github.ref, 'refs/heads/tag' )
+#         run: |
+#           echo "START UpdateDeploymentReleaseTemplate"
+#           source variables
+#           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           cd crc-app-deployment
+#           git checkout nonprd
+#           cd overlay/sit
+#           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+#           cd ../..
+#           git add -A
+#           git commit -a -m "[Gradle Release Plugin]"
+#           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           echo "FINISH UpdateDeploymentReleaseTemplate"
