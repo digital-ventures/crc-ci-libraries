@@ -1,7 +1,7 @@
 on:
   workflow_call:
 jobs:
-  buildDocker:
+  BuildAndRelease:
     runs-on: ubuntu-latest
     # container: openjdk:17-jdk-alpine3.14
     container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
@@ -11,7 +11,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: AddAPK
         run: apk --no-cache add git curl jq
+
       - run: git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -40,19 +42,6 @@ jobs:
           helm: '3.9.4'
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
-
-##### CodeScan
-      - name: SonarQubeScan
-        if: contains(github.ref_name, 'SONAR')
-        run: |
-          ./gradlew sonarqube -Dsonar.login=${{ secrets.CRC_SONARQUBE_TOKEN }} -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }} -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
-
-##### Test
-      - name: JustTest
-        if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' )
-        run: |
-          echo "HELLO"
-          # ./gradlew clean test
 
 ##### Test Before Release
       - name: PrepareRelease
@@ -87,7 +76,6 @@ jobs:
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
-          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd
@@ -122,7 +110,6 @@ jobs:
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
           source variables
-          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd

@@ -1,0 +1,57 @@
+on:
+  workflow_call:
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    # container: openjdk:17-jdk-alpine3.14
+    container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
+    # container: openjdk:18-jdk-alpine3.15
+    # container: openjdk:15-jdk-alpine3.12
+    steps:
+      - uses: actions/checkout@v3
+      - name: AddAPK
+        run: apk --no-cache add git curl jq
+
+      - run: git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.CRC_GIT_TOKEN }}
+
+      - name: GitSubmodule
+        run: |
+          git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
+          git submodule update --remote -f --init
+          git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+
+      - name: DockerLogin
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.CRC_ACR_REGISTRY }}
+          username: ${{ secrets.CRC_ACR_USER }}
+          password: ${{ secrets.CRC_ACR_TOKEN }}
+
+      - name: BuildTools
+        uses: yokawasa/action-setup-kube-tools@v0.7.1
+        with:
+          kustomize: '3.9.1' #'4.5.7'
+          skaffold: '1.17.2' #'1.39.1'
+          helm: '3.9.4'
+          kubectl: '1.17.8' #'1.20.2'
+          yq: '4.7.1'
+
+##### CodeScan
+      - name: SonarQubeScan
+        if: contains(github.ref_name, 'SONAR')
+        run: |
+          ./gradlew sonarqube -Dsonar.login=${{ secrets.CRC_SONARQUBE_TOKEN }} -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }} -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
+
+##### Test
+      - name: CleanTest
+        if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' )
+        run: |
+          echo "HELLO"
+          # ./gradlew clean test

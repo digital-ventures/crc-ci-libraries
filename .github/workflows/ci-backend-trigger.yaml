@@ -24,14 +24,14 @@ on:
       - skaffold.yml
 
 jobs:
-  # test:
-  #   name: test
-  #   uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-release.yaml@master
-  #   if: '($TRIGGER_TARGET == "release" || $TRIGGER_TARGET == "master" || $TRIGGER_TARGET =~ /.*CRC.*/ || $TRIGGER_TARGET =~ /.*production\/.*/ )'
-  #   secrets: inherit
+  test:
+    name: test
+    if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' ) || contains(github.ref_name, 'SONAR')
+    uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-test.yaml@master
+    secrets: inherit
   release:
     name: release
-    uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-release.yaml@master
-    # if: github.event_name != 'pull_request'
+    uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-build.yaml@master
+    if: github.ref_name == 'release' || github.ref_name == 'deployment' 
     secrets: inherit
 
