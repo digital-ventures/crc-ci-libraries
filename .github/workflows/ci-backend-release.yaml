@@ -95,7 +95,7 @@ jobs:
           git checkout nonprd
           cd overlay/dev
           echo "APP: ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}"
-          cat overlay/dev/kustomization.yaml
+          cat kustomization.yaml
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
           git status
