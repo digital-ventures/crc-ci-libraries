@@ -92,6 +92,7 @@ jobs:
           git commit -a -m "[Gradle Release Plugin]"
           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          echo "${IMG_NAME}:${IMG_VERSION}"
           echo "FINISH UpdateDeploymentSnapshotTemplate"
 
 # ##### Release overlay/sit
