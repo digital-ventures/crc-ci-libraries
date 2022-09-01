@@ -77,7 +77,7 @@ jobs:
           cd ../..
           git add -A
           git commit -a -m "[Gradle Release Plugin]"
-          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com//digital-ventures/crc-app-deployment.git
           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           echo "${IMG_NAME}:${IMG_VERSION}"
           echo "FINISH UpdateDeploymentSnapshotTemplate"
@@ -95,7 +95,7 @@ jobs:
           # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           git branch
-          git show-ref
+
 
       # - name: PrepareRelease2
       #   if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
