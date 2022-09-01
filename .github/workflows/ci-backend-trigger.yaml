@@ -26,7 +26,7 @@ on:
 jobs:
   test:
     name: test
-    if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' ) || contains(github.ref_name, 'SONAR')
+    if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' ) || contains( github.ref_name, 'SONAR' )
     uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-test.yaml@master
     secrets: inherit
   release:
