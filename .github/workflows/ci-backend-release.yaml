@@ -150,20 +150,20 @@ jobs:
 #           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
 #       - name: UpdateDeploymentReleaseTemplate
-        # if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
-        if: "${{ github.ref_name == 'release' }} && ${{ github.event_name == 'pull_request' }}"
-        run: |
-          echo "START UpdateDeploymentReleaseTemplate"
-          source variables
-          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          cd crc-app-deployment
-          git checkout nonprd
-          cd overlay/sit
-          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
-          cd ../..
-          git add -A
-          git commit -a -m "[Gradle Release Plugin]"
-          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          echo "FINISH UpdateDeploymentReleaseTemplate"
+#         # if: "${{ github.ref_name == 'release' }} && ${{ github.event.head_commit.message != '' }}"
+#         if: "${{ github.ref_name == 'release' }} && ${{ github.event_name == 'pull_request' }}"
+#         run: |
+#           echo "START UpdateDeploymentReleaseTemplate"
+#           source variables
+#           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+#           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           cd crc-app-deployment
+#           git checkout nonprd
+#           cd overlay/sit
+#           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+#           cd ../..
+#           git add -A
+#           git commit -a -m "[Gradle Release Plugin]"
+#           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+#           echo "FINISH UpdateDeploymentReleaseTemplate"
