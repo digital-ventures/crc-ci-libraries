@@ -2,26 +2,26 @@ on:
   workflow_call:
   workflow_run:
     workflows: ["Build"]
-    branches:
-      - 'deployment'
-      - '**release**'
-    tags-ignore:
-      - ""
-      - '!**Gradle Release Plugin**'
-  pull_request_target:
-    branches-ignore:
-      - 'deployment'
-  push: 
-    paths:
-      - gradle/**/*
-      - manifests/**/*
-      - src/**/*
-      - build.gradle.kts
-      - gradle.properties
-      - gradlew
-      - gradlew.bat
-      - settings.gradle.kts
-      - skaffold.yml
+  #   branches:
+  #     - 'deployment'
+  #     - '**release**'
+  #   tags-ignore:
+  #     - ""
+  #     - '!**Gradle Release Plugin**'
+  # pull_request_target:
+  #   branches-ignore:
+  #     - 'deployment'
+  # push: 
+  #   paths:
+  #     - gradle/**/*
+  #     - manifests/**/*
+  #     - src/**/*
+  #     - build.gradle.kts
+  #     - gradle.properties
+  #     - gradlew
+  #     - gradlew.bat
+  #     - settings.gradle.kts
+  #     - skaffold.yml
 
 jobs:
   test:
@@ -32,6 +32,6 @@ jobs:
   release:
     name: release
     uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-build.yaml@master
-    if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/deployment' || github.ref_type == 'tag'
+    if: (github.ref == 'refs/heads/release' || github.ref == 'refs/heads/deployment' || github.ref_type == 'tag') && github.event_name == 'pull_request'
     secrets: inherit
 
