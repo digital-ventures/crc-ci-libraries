@@ -92,12 +92,13 @@ jobs:
           cd crc-app-deployment
           git checkout nonprd
           cd overlay/dev
+          cat variables
+          cat build.json
+          echo "APP: ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}"
+          cat overlay/dev/kustomization.yaml
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
-          pwd
           git status
-          cat overlay/dev/kustomization.yaml
-          echo "APP: ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}""
           git add -A
           git commit -a -m "[Gradle Release Plugin]"
           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
