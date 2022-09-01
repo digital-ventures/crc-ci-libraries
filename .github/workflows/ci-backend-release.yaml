@@ -17,6 +17,10 @@ jobs:
           submodules: recursive
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
+  # github.ref_name: helloworld-github-1.15
+# github.event_name: push
+
+
       - name: Debug1
         run: |
           echo "  github.ref_name: ${{ github.ref_name }}"
@@ -24,6 +28,11 @@ jobs:
 
       - name: Debug2
         if: "${{ github.ref_name == 'deployment' }} && ${{ github.event_name == 'pull_request' }}"
+        run: |
+          echo "deployment and pull_request"
+
+      - name: Debug2.1
+        if: contains( github.ref_name, 'deployment' ) && contains( github.event_name, 'pull_request' )
         run: |
           echo "deployment and pull_request"
 
