@@ -88,21 +88,13 @@ jobs:
         # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref_name == 'release'
         run: |
-          git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
-          # git checkout release
-          # git add -A
-          # git commit -a -m "[Gradle Release Plugin]"
-          # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
-          # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
-          git branch
-
-
-      # - name: PrepareRelease2
-      #   if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-      #   # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-      #   # if: github.ref_name == 'release'
-      #   run: |
-      #     ./gradlew -x test -Prelease.useAutomaticVersion=true release
+          # git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+          git checkout release
+          git add -A
+          git commit -a -m "[Gradle Release Plugin]"
+          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+          ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
 # ##### Release overlay/sit
 #       - name: BuildContainerReleaseImage
