@@ -21,10 +21,10 @@ jobs:
 
       - name: Debug
         run: |
-          echo "                 github.ref_base: ${{ github.ref_base }}"
-          echo "                     github.base: ${{ github.base }}"
+          echo "                 github.base_ref: ${{ github.base_ref }}"
+          echo "                 github.ref_name: ${{ github.ref_name }}"
           echo "                      github.ref: ${{ github.ref }}"
-          echo "                 github.ref_head: ${{ github.ref_head }}"
+          echo "                 github.head_ref: ${{ github.head_ref }}"
           echo "               github.event_name: ${{ github.event_name }}"
           echo "github.event.head_commit.message: ${{ github.event.head_commit.message }}"
 
@@ -67,7 +67,7 @@ jobs:
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage
-        if: github.ref_base == 'deployment' && github.event_name == 'pull_request'
+        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START BuildContainerSnapshotImage"
           skaffold build -q > build.json
@@ -82,7 +82,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentSnapshotTemplate
-        if: github.ref_base == 'deployment' && github.event_name == 'pull_request'
+        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
@@ -100,7 +100,7 @@ jobs:
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref_base == 'release' && contains( github.ref, 'refs/heads/tag' )
+        if: github.base_ref == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
           echo "START BuildContainerReleaseImage"
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
@@ -115,7 +115,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref_base == 'release' && contains( github.ref, 'refs/heads/tag' )
+        if: github.base_ref == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
           source variables
