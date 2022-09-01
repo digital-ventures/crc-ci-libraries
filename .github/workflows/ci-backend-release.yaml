@@ -32,6 +32,11 @@ jobs:
           echo "deployment and pull_request"
 
       - name: Debug2.1
+        if: "${{ github.ref_name = 'deployment' }} && ${{ github.event_name = 'pull_request' }}"
+        run: |
+          echo "deployment and pull_request"
+
+      - name: Debug2.2
         if: contains( github.ref_name, 'deployment' ) && contains( github.event_name, 'pull_request' )
         run: |
           echo "deployment and pull_request"
