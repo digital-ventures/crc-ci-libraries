@@ -88,7 +88,6 @@ jobs:
         # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref_name == 'release'
         run: |
-          # git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout release
           git add -A
           git commit -a -m "[Gradle Release Plugin]"
