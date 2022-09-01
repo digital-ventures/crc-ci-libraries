@@ -38,12 +38,12 @@ jobs:
           echo "pull_request"
 
       - name: Debug5
-        if: contains( github.ref_name, 'helloworld' || contains( github.event_name, 'push' }}
+        if: contains( github.ref_name, 'helloworld' ) || contains( github.event_name, 'push' )
         run: |
           echo "helloworld and push"
 
       - name: Debug6
-        if: contains( github.ref_name, 'helloworld' && contains( github.event_name, 'pull_request' }}
+        if: contains( github.ref_name, 'helloworld' ) && contains( github.event_name, 'pull_request' )
         run: |
           echo "helloworld and pull_request"
 
