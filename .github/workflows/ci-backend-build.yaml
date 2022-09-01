@@ -19,6 +19,15 @@ jobs:
           submodules: recursive
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
+      - name: Debug
+        run: |
+          echo "                 github.ref_base: ${{ github.ref_base }}"
+          echo "                     github.base: ${{ github.base }}"
+          echo "                      github.ref: ${{ github.ref }}"
+          echo "                 github.ref_head: ${{ github.ref_head }}"
+          echo "               github.event_name: ${{ github.event_name }}"
+          echo "github.event.head_commit.message: ${{ github.event.head_commit.message }}"
+
       - name: GitSubmodule
         run: |
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
