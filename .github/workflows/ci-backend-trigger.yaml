@@ -32,6 +32,6 @@ jobs:
   release:
     name: release
     uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-build.yaml@master
-    if: (github.ref == 'refs/heads/release' || github.ref == 'refs/heads/deployment' || github.ref_type == 'tag') && github.event_name == 'pull_request'
+    if: (github.ref == 'refs/pull/release' || github.ref == 'refs/tag/release' || github.ref == 'refs/pull/deployment' || github.ref == 'refs/tag/deployment'  )
     secrets: inherit
 
