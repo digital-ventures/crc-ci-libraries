@@ -44,7 +44,7 @@ jobs:
 
       - name: Debug
         if: contains( github.ref_name, 'helloworld' && contains( github.event_name, 'pull_request' }}
-        run:
+        run: |
           echo "helloworld and pull_request"
 
 
