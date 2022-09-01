@@ -19,6 +19,15 @@ jobs:
       #     submodules: recursive
       #     token: ${{ secrets.CRC_GIT_TOKEN }}
 
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+
       - name: Debug
         run: |
           echo "                 github.base_ref: ${{ github.base_ref }}"
