@@ -87,13 +87,13 @@ jobs:
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
+          cat variables
+          cat build.json
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd
           cd overlay/dev
-          cat variables
-          cat build.json
           echo "APP: ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}"
           cat overlay/dev/kustomization.yaml
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
