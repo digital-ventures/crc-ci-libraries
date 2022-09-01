@@ -58,7 +58,7 @@ jobs:
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage
-        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        if: github.ref_base == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START BuildContainerSnapshotImage"
           skaffold build -q > build.json
@@ -73,7 +73,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentSnapshotTemplate
-        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        if: github.ref_base == 'deployment' && github.event_name == 'pull_request'
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
@@ -91,7 +91,7 @@ jobs:
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref == 'refs/pull/release' && github.event_name == 'pull_request'
+        if: github.ref_base == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
           echo "START BuildContainerReleaseImage"
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
@@ -106,7 +106,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref == 'refs/pull/release' && github.event_name == 'pull_request'
+        if: github.ref_base == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
           source variables
