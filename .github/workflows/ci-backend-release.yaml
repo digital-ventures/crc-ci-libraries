@@ -17,6 +17,11 @@ jobs:
           submodules: recursive
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
+      - name: Debug
+        run: |
+          echo "  github.ref_name: ${{ github.ref_name }}"
+          echo "github.event_name: ${{ github.event_name }}"
+
       - name: GitSubmodule
         run: |
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
@@ -87,15 +92,11 @@ jobs:
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
-          cat variables
-          cat build.json
           # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
           git checkout nonprd
           cd overlay/dev
-          echo "APP: ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}"
-          cat kustomization.yaml
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
           git status
