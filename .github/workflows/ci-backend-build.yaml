@@ -21,9 +21,6 @@ jobs:
 
       - name: Debug
         run: |
-          # echo "                 github.base_ref: ${env.GITHUB_BASE_REF}"
-          echo "                 github.base_ref: ${GITHUB_BASE_REF}"
-          echo "                 github.base_ref: ${{ GITHUB_BASE_REF }}"
           echo "                 github.base_ref: ${{ github_base_ref }}"
           echo "                 github.ref_name: ${{ github.ref_name }}"
           echo "                      github.ref: ${{ github.ref }}"
