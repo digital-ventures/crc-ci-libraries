@@ -51,7 +51,7 @@ jobs:
 
 ##### Test
       - name: CleanTest
-        if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' || contains( github.ref_name, 'production' )
+        if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' )
         run: |
           echo "HELLO"
           # ./gradlew clean test
