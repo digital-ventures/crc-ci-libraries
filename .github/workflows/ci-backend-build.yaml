@@ -9,133 +9,120 @@ jobs:
     # container: openjdk:15-jdk-alpine3.12
     steps:
       - uses: actions/checkout@v3
-      # - name: AddAPK
-      #   run: apk --no-cache add git curl jq
+      - name: AddAPK
+        run: apk --no-cache add git curl jq
 
-      # - run: git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+      - run: git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 
-      # - uses: actions/checkout@v3
-      #   with:
-      #     submodules: recursive
-      #     token: ${{ secrets.CRC_GIT_TOKEN }}
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          token: ${{ secrets.CRC_GIT_TOKEN }}
+
+      - name: GitSubmodule
+        run: |
+          git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
+          git submodule update --remote -f --init
+          git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+
+      - name: DockerLogin
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.CRC_ACR_REGISTRY }}
+          username: ${{ secrets.CRC_ACR_USER }}
+          password: ${{ secrets.CRC_ACR_TOKEN }}
+
+      - name: BuildTools
+        uses: yokawasa/action-setup-kube-tools@v0.7.1
+        with:
+          kustomize: '3.9.1' #'4.5.7'
+          skaffold: '1.17.2' #'1.39.1'
+          helm: '3.9.4'
+          kubectl: '1.17.8' #'1.20.2'
+          yq: '4.7.1'
 
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
 
-      - name: Debug
+##### Test Before Release
+      - name: PrepareRelease
+        if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        # if: github.ref_name == 'release'
         run: |
-          echo "                 github.base_ref: ${{ github.base_ref }}"
-          echo "                 github.ref_name: ${{ github.ref_name }}"
-          echo "                      github.ref: ${{ github.ref }}"
-          echo "                 github.head_ref: ${{ github.head_ref }}"
-          echo "               github.event_name: ${{ github.event_name }}"
-          echo "github.event.head_commit.message: ${{ github.event.head_commit.message }}"
+          git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+          git checkout release
+          git add -A
+          git commit -a -m "[Gradle Release Plugin]"
+          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
-#       - name: GitSubmodule
-#         run: |
-#           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
-#           git submodule update --remote -f --init
-#           git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
-#           git config --global user.name ${{ secrets.CRC_GIT_USER }}
-#           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+##### Release overlay/dev
+      - name: BuildContainerSnapshotImage
+        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        run: |
+          echo "START BuildContainerSnapshotImage"
+          skaffold build -q > build.json
+          echo "FINISH BuildContainerSnapshotImage"
+          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+          SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+          echo IMG_NAME="${IMG_NAME}" >> variables
+          echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+          echo IMG_VERSION="${IMG_VERSION}" >> variables
+          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
-#       - name: DockerLogin
-#         uses: azure/docker-login@v1
-#         with:
-#           login-server: ${{ secrets.CRC_ACR_REGISTRY }}
-#           username: ${{ secrets.CRC_ACR_USER }}
-#           password: ${{ secrets.CRC_ACR_TOKEN }}
+      - name: UpdateDeploymentSnapshotTemplate
+        if: github.ref == 'refs/pull/deployment' && github.event_name == 'pull_request'
+        run: |
+          echo "START UpdateDeploymentSnapshotTemplate"
+          source variables
+          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          cd crc-app-deployment
+          git checkout nonprd
+          cd overlay/dev
+          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          cd ../..
+          git add -A
+          git commit -a -m "[Gradle Release Plugin]"
+          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          echo "FINISH UpdateDeploymentSnapshotTemplate"
 
-#       - name: BuildTools
-#         uses: yokawasa/action-setup-kube-tools@v0.7.1
-#         with:
-#           kustomize: '3.9.1' #'4.5.7'
-#           skaffold: '1.17.2' #'1.39.1'
-#           helm: '3.9.4'
-#           kubectl: '1.17.8' #'1.20.2'
-#           yq: '4.7.1'
+##### Release overlay/sit
+      - name: BuildContainerReleaseImage
+        if: github.ref == 'refs/pull/release' && contains( github.ref, 'refs/heads/tag' )
+        run: |
+          echo "START BuildContainerReleaseImage"
+          skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
+          echo "FINISH BuildContainerReleaseImage"
+          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+          SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+          echo IMG_NAME="${IMG_NAME}" >> variables
+          echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+          echo IMG_VERSION="${IMG_VERSION}" >> variables
+          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
-# ##### Test Before Release
-#       - name: PrepareRelease
-#         if: github.ref == 'refs/pull/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-#         # if: github.ref_name == 'release'
-#         run: |
-#           git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
-#           git checkout ${{ github.base_ref }}
-#           git add -A
-#           git commit -a -m "[Gradle Release Plugin]"
-#           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           ./gradlew -x test -Prelease.useAutomaticVersion=true release
-
-# ##### Release overlay/dev
-#       - name: BuildContainerSnapshotImage
-#         if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
-#         run: |
-#           echo "START BuildContainerSnapshotImage"
-#           skaffold build -q > build.json
-#           echo "FINISH BuildContainerSnapshotImage"
-#           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
-#           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
-#           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
-#           SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
-#           echo IMG_NAME="${IMG_NAME}" >> variables
-#           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
-#           echo IMG_VERSION="${IMG_VERSION}" >> variables
-#           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-
-#       - name: UpdateDeploymentSnapshotTemplate
-#         if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
-#         run: |
-#           echo "START UpdateDeploymentSnapshotTemplate"
-#           source variables
-#           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           cd crc-app-deployment
-#           git checkout nonprd
-#           cd overlay/dev
-#           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
-#           cd ../..
-#           git add -A
-#           git commit -a -m "[Gradle Release Plugin]"
-#           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           echo "FINISH UpdateDeploymentSnapshotTemplate"
-
-# ##### Release overlay/sit
-#       - name: BuildContainerReleaseImage
-#         if: github.base_ref == 'release' && contains( github.ref, 'refs/heads/tag' )
-#         run: |
-#           echo "START BuildContainerReleaseImage"
-#           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
-#           echo "FINISH BuildContainerReleaseImage"
-#           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
-#           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
-#           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
-#           SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
-#           echo IMG_NAME="${IMG_NAME}" >> variables
-#           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
-#           echo IMG_VERSION="${IMG_VERSION}" >> variables
-#           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-
-#       - name: UpdateDeploymentReleaseTemplate
-#         if: github.base_ref == 'release' && contains( github.ref, 'refs/heads/tag' )
-#         run: |
-#           echo "START UpdateDeploymentReleaseTemplate"
-#           source variables
-#           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           cd crc-app-deployment
-#           git checkout nonprd
-#           cd overlay/sit
-#           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
-#           cd ../..
-#           git add -A
-#           git commit -a -m "[Gradle Release Plugin]"
-#           git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-#           echo "FINISH UpdateDeploymentReleaseTemplate"
+      - name: UpdateDeploymentReleaseTemplate
+        if: github.ref == 'refs/pull/release' && contains( github.ref, 'refs/heads/tag' )
+        run: |
+          echo "START UpdateDeploymentReleaseTemplate"
+          source variables
+          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          cd crc-app-deployment
+          git checkout nonprd
+          cd overlay/sit
+          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          cd ../..
+          git add -A
+          git commit -a -m "[Gradle Release Plugin]"
+          git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          echo "FINISH UpdateDeploymentReleaseTemplate"
