@@ -45,7 +45,7 @@ jobs:
 
 ##### Test Before Release
       - name: PrepareRelease
-        if: github.ref_name == 'release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref_name == 'release'
         run: |
           git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
@@ -57,7 +57,7 @@ jobs:
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage
-        if: github.ref_name == 'deployment' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'pull_request'
         run: |
           echo "START BuildContainerSnapshotImage"
           skaffold build -q > build.json
@@ -72,7 +72,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentSnapshotTemplate
-        if: github.ref_name == 'deployment' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'pull_request'
         run: |
           echo "START UpdateDeploymentSnapshotTemplate"
           source variables
@@ -91,7 +91,7 @@ jobs:
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref_name == 'release' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/release' && github.event_name == 'pull_request'
         run: |
           echo "START BuildContainerReleaseImage"
           skaffold build -q --tag ${{ github.event.head_commit.message }} > build.json
@@ -106,7 +106,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref_name == 'release' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/release' && github.event_name == 'pull_request'
         run: |
           echo "START UpdateDeploymentReleaseTemplate"
           source variables

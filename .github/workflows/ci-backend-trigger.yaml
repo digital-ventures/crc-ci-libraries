@@ -26,12 +26,12 @@ on:
 jobs:
   test:
     name: test
-    if: github.ref_name == 'release' || github.ref_name == 'master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' ) || contains( github.ref_name, 'SONAR' )
+    if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' ) || contains( github.ref_name, 'SONAR' )
     uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-test.yaml@master
     secrets: inherit
   release:
     name: release
     uses: digital-ventures/crc-ci-libraries/.github/workflows/ci-backend-build.yaml@master
-    if: github.ref_name == 'release' || github.ref_name == 'deployment' 
+    if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/deployment' || github.ref_type == 'tag'
     secrets: inherit
 
