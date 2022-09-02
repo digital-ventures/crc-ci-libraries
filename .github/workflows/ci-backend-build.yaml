@@ -54,7 +54,7 @@ jobs:
 
 ##### Test
       - name: CleanTest
-        if: contains( github.ref, 'merge ) && github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request'
+        if: contains( github.ref, merge ) && github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request'
         run: |
           echo "HELLO"
           # ./gradlew clean test
