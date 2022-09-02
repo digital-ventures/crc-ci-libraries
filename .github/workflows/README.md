@@ -1,5 +1,0 @@
-branch: Feature  > Create Pull Request (branch: feature > deployment)                             > Push >                                           > Create Pull Request (branch: deployment > release) > Push
-                   BuildContainerSnapshotImage                                            Merge pull request #23 from digital-ventures/helloworld      Commit Message                                       Merge pull request               
-                   - skaffold build                                                                                                                                                                         Prerelease
-                   - kustomize edit set image > app-deployment (overlay/dev) (nonprd)                                                                                                                       - gradlew -x test -Prelease.useAutomaticVersion=true release
-                     - ${SERVICE_NAME}:793f836-dirty 
