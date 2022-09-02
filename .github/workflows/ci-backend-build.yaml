@@ -107,14 +107,14 @@ jobs:
 
 ##### Test Before Release overlay/sit
       - name: Checkout Release Branch
-        if: github.ref == "refs/heads/release" && github.event_name == 'push
+        if: github.ref == 'refs/heads/release' && github.event_name == 'push'
         # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         uses: actions/checkout@v3
         with:
           ref: release
           
       - name: PrepareRelease
-        if: github.ref == "refs/heads/release" && github.event_name == 'push
+        if: github.ref == 'refs/heads/release' && github.event_name == 'push'
         # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref_name == 'release'
