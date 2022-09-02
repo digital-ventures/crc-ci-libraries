@@ -79,7 +79,7 @@ jobs:
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
-          if [[ ${NOCHG} != "0" ]]; then
+          if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
           fi
           ###### Handle Pull & Push Retry ######
@@ -87,18 +87,19 @@ jobs:
           while [ "${retry}" -lt 3 ]
           do
             git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git || ppResult=$?
-            echo "Push Result: ${ppResult}"
+            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            ppResult=$?
+            echo -e "\e[31m P&P Result \e[0m : \e[96m ${ppResult}"
             if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
-              echo "Update Deployment success"
+              echo -e "\e[92m Update Deployment success \e[0m"
               break
             else
               retry=$((retry+1))
               if [ "${retry}" -eq 3 ]; then
-                echo "Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED"
+                echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m"
                 exit 1
               else
-                echo "Update Deployment failed, retrying : ${retry}"
+                echo -e "\e[93m Update Deployment failed, retrying : \e[96m ${retry} \e[0m"
               fi
             fi
           done
@@ -119,21 +120,23 @@ jobs:
         run: |
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
-          if [[ $NOCHG != "0" ]]; then
+          if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
           fi
           ###### Handle Pull & Push Retry ######
           retry=0
-          while [ "$retry" -lt 3 ]
+          while [ "${retry}" -lt 3 ]
           do
-            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git && git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git || ppResult=$?;
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git'
+            ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult";
-            if [[ $ppResult == "" || $ppResult -eq 0 ]]; then
+            if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
               echo -e "\e[92m Update Deployment success \e[0m"
               break
             else
               retry=$((retry+1))
-              if [ "$retry" -eq 3 ]; then
+              if [ "${retry}" -eq 3 ]; then
                 echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m";
                 exit 1
               else
@@ -172,21 +175,23 @@ jobs:
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
-          if [[ $NOCHG != "0" ]]; then
+          if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
           fi
           ###### Handle Pull & Push Retry ######
           retry=0
-          while [ "$retry" -lt 3 ]
+          while [ "${retry}" -lt 3 ]
           do
-            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git && git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git || ppResult=$?;
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult";
-            if [[ $ppResult == "" || $ppResult -eq 0 ]]; then
+            if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
               echo -e "\e[92m Update Deployment success \e[0m"
               break
             else
               retry=$((retry+1))
-              if [ "$retry" -eq 3 ]; then
+              if [ "${retry}" -eq 3 ]; then
                 echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m";
                 exit 1
               else
