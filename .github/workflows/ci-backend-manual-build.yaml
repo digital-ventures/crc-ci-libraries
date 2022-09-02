@@ -1,7 +1,7 @@
 on:
   workflow_call:
 jobs:
-  Test:
+  BuildAndRelease:
     runs-on: ubuntu-latest
     # container: openjdk:17-jdk-alpine3.14
     container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
@@ -47,15 +47,19 @@ jobs:
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
 
-##### CodeScan
-      - name: SonarQubeScan
-        if: contains(github.ref_name, 'SONAR')
-        run: |
-          ./gradlew sonarqube -Dsonar.login=${{ secrets.CRC_SONARQUBE_TOKEN }} -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }} -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
-##### Test
-      - name: CleanTest
-        if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' )
+##### Release overlay/dev
+      - name: ManualBuildContainerImage
+        # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
-          echo "HELLO"
-          # ./gradlew clean test
+          echo -e "\e[92m START ManualBuildContainerImage \e[0m"
+          skaffold build -q > build.json
+          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+          echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
+          echo -e "\e[92m FINISH ManualBuildContainerImage \e[0m"

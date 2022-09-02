@@ -60,8 +60,9 @@ jobs:
           # ./gradlew clean test
 
 ##### Release overlay/dev
-      - name: BuildContainerSnapshotImage
-        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+      - name: BuildContainerSnapshotImage #MERGED TRIGGER
+        # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo "START BuildContainerSnapshotImage"
           skaffold build -q > build.json
@@ -75,8 +76,8 @@ jobs:
           echo IMG_VERSION="${IMG_VERSION}" >> variables
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
-      - name: UpdateDeploymentSnapshotTemplate
-        if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+      - name: UpdateDeploymentSnapshotTemplate #MERGED TRIGGER
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START UpdateDeploymentSnapshotTemplate \e[0m"
           source variables
