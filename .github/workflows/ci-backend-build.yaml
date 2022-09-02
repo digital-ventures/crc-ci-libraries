@@ -9,10 +9,16 @@ jobs:
     # container: openjdk:15-jdk-alpine3.12
     steps:
       - uses: actions/checkout@v3
+
       - name: AddAPK
         run: apk --no-cache add git curl jq
 
-      - run: git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+      - name: GitConfig
+      - run: |
+          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+          # git config pull.rebase false
 
       - uses: actions/checkout@v3
         with:
@@ -24,9 +30,6 @@ jobs:
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
           git submodule update --remote -f --init
           git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
-          git config --global user.name ${{ secrets.CRC_GIT_USER }}
-          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
-          # git config pull.rebase false
 
       - name: DockerLogin
         uses: azure/docker-login@v1
@@ -106,50 +109,14 @@ jobs:
           echo -e "\e[92m FINISH UpdateDeploymentSnapshotTemplate \e[0m"
 
 ##### Test Before Release overlay/sit
-      # - name: Checkout Release Branch
-      #   if: github.ref == 'refs/heads/release' && github.event_name == 'push'
-      #   # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-      #   uses: actions/checkout@v3
-      #   with:
-      #     ref: release
-          
       - name: PrepareRelease
-        if: github.ref == 'refs/heads/release' && github.event_name == 'push'
-        # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        # if: github.ref_name == 'release'
+        if: github.ref == 'refs/heads/release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          # git add -A
-          # git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
-          # if [[ "${NOCHG}" != "0" ]]; then
-          #   git commit -a -m "[Gradle Release Plugin]"
-          # fi
-          # ###### Handle Pull & Push Retry ######
-          # retry=0
-          # while [ "${retry}" -lt 3 ]
-          # do
-          #   git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git 
-          #   git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
-          #   ppResult=$?
-          #   echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult"
-          #   if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
-          #     echo -e "\e[92m Update Deployment success \e[0m"
-          #     break
-          #   else
-          #     retry=$((retry+1))
-          #     if [ "${retry}" -eq 3 ]; then
-          #       echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m"
-          #       exit 1
-          #     else
-          #       echo -e "\e[93m Update Deployment failed, retrying : \e[96m $retry \e[0m"
-          #     fi
-          #   fi
-          # done
           ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref_name == 'release' && contains( github.ref, 'refs/heads/tag' )
+        if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           skaffold build -q --tag ${{ github.ref_name }} > build.json
@@ -164,7 +131,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref_name == 'release' && contains( github.ref, 'refs/heads/tag' )
+        if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
           source variables
