@@ -26,6 +26,7 @@ jobs:
           git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
           git config --global user.name ${{ secrets.CRC_GIT_USER }}
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+          git config pull.rebase false
 
       - name: DockerLogin
         uses: azure/docker-login@v1
