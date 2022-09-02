@@ -63,13 +63,11 @@ jobs:
           echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
           echo IMG_VERSION="${IMG_VERSION}" >> variables
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
-          cat build.json
-          cat variables
 
       - name: UpdateDeploymentSnapshotTemplate
         if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         run: |
-          echo "START UpdateDeploymentSnapshotTemplate"
+          echo -e "\e[92m START UpdateDeploymentSnapshotTemplate \e[0m"
           source variables
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
@@ -103,8 +101,8 @@ jobs:
               fi
             fi
           done
-          echo "${IMG_NAME}:${IMG_VERSION}"
-          echo "FINISH UpdateDeploymentSnapshotTemplate"
+          echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
+          echo -e "\e[92m FINISH UpdateDeploymentSnapshotTemplate \e[0m"
 
 ##### Test Before Release overlay/sit
       - name: Checkout Release Branch
@@ -165,7 +163,7 @@ jobs:
       - name: UpdateDeploymentReleaseTemplate
         if: github.ref_name == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
-          echo "START UpdateDeploymentReleaseTemplate"
+          echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
           source variables
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           cd crc-app-deployment
@@ -199,5 +197,5 @@ jobs:
               fi
             fi
           done
-          echo "${IMG_NAME}:${IMG_VERSION}"
-          echo "FINISH UpdateDeploymentReleaseTemplate"
+          echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
+          echo -e "\e[92m FINISH UpdateDeploymentReleaseTemplate \e[0m"
