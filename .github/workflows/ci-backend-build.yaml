@@ -107,13 +107,15 @@ jobs:
 
 ##### Test Before Release overlay/sit
       - name: Checkout Release Branch
-        if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == "refs/heads/release",' && github.event_name == 'push
+        # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         uses: actions/checkout@v3
         with:
           ref: release
           
       - name: PrepareRelease
-        if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == "refs/heads/release",' && github.event_name == 'push
+        # if : github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref == 'refs/heads/release' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.ref_name == 'release'
         run: |
@@ -126,7 +128,7 @@ jobs:
           retry=0
           while [ "${retry}" -lt 3 ]
           do
-            git pull --allow-unrelated-histories https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git 
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git 
             git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
             ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult"
@@ -149,9 +151,9 @@ jobs:
       - name: BuildContainerReleaseImage
         if: github.ref_name == 'release' && contains( github.ref, 'refs/heads/tag' )
         run: |
-          echo "START BuildContainerReleaseImage"
+          echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           skaffold build -q --tag ${{ github.ref_name }} > build.json
-          echo "FINISH BuildContainerReleaseImage"
+          echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
