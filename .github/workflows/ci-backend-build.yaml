@@ -117,7 +117,10 @@ jobs:
         # if: github.ref_name == 'release'
         run: |
           git add -A
-          git commit -a -m "[Gradle Release Plugin]"
+          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
+          if [[ "${NOCHG}" != "0" ]]; then
+            git commit -a -m "[Gradle Release Plugin]"
+          fi
           ###### Handle Pull & Push Retry ######
           retry=0
           while [ "${retry}" -lt 3 ]
