@@ -55,7 +55,7 @@ jobs:
 ##### Release overlay/dev
       - name: ManualBuildContainerImage
         # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
-        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
+        if: contains( github.ref, 'refs/tags' ) && github.event_name == 'workflow_dispatch'
         run: |
           echo -e "\e[92m START ManualBuildContainerImage \e[0m"
           skaffold build -q --tag ${{ github.ref_name }} > build.json
