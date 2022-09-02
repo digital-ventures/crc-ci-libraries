@@ -52,6 +52,13 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
+##### Test
+      - name: CleanTest
+        if: contains( github.ref, 'merge ) && github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request'
+        run: |
+          echo "HELLO"
+          # ./gradlew clean test
+
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage
         if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
