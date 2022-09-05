@@ -54,7 +54,7 @@ jobs:
 
       - name: Debug
         run: |
-          ls -l crc-common/
+          ls -l central-common/
           cat .gitmodules
 
 ##### Test
