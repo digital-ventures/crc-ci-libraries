@@ -64,9 +64,9 @@ jobs:
         # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
-          echo "START BuildContainerSnapshotImage"
+          echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
           skaffold build -q > build.json
-          echo "FINISH BuildContainerSnapshotImage"
+          echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
