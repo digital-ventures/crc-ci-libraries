@@ -52,11 +52,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Debug
-        run: |
-          ls -l central-common/
-          cat .gitmodules
-
 ##### Test
       - name: CleanTest
         if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'release' && github.event_name == 'pull_request'
