@@ -19,7 +19,7 @@ jobs:
           git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
           git config --global user.name ${{ secrets.CRC_GIT_USER }}
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
-          git config submodule.central-common.ignore all
+          git config --global submodule.central-common.ignore all
 
       - uses: actions/checkout@v3
 
