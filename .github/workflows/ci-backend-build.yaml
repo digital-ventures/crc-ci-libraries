@@ -137,6 +137,7 @@ jobs:
           ###### END GitSubmodule ######
           git add -A
           git reset -- .gitmodules
+          git reset -- central-common
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
