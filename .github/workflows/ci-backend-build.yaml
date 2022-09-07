@@ -8,6 +8,8 @@ jobs:
     # container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
+    env: 
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     steps:
       - uses: actions/checkout@v3
 
