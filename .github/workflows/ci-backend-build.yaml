@@ -101,7 +101,7 @@ jobs:
           do
             # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
             # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            git pull --allow-unrelated-histories https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
             git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
             ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m ${ppResult}"
