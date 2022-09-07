@@ -28,7 +28,6 @@ jobs:
       #   with:
       #     submodules: recursive
       #     token: ${{ secrets.CRC_GIT_TOKEN }}
-          # token: ${{ secrets.CRC_GITLAB_TOKEN }}
 
       - name: GitSubmodule
         run: |

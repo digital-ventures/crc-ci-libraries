@@ -21,9 +21,11 @@ jobs:
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
 
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          token: ${{ secrets.CRC_GIT_TOKEN }}
+
+      # - uses: actions/checkout@v3
+      #   with:
+      #     submodules: recursive
+      #     token: ${{ secrets.CRC_GIT_TOKEN }}
 
       - name: GitSubmodule
         run: |
