@@ -127,6 +127,7 @@ jobs:
           git config --global submodule.central-common.ignore all
           git add -A
           git status
+          git status --ignored --untracked
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
