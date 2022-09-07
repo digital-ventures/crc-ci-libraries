@@ -124,7 +124,7 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          ./gradlew -x test -Prelease.useAutomaticVersion=true central-release
+          ./gradlew -x test -Prelease.useAutomaticVersion=true release
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
