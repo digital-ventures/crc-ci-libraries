@@ -125,8 +125,6 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          cat .gitmodules
-          git status
           git remote set-url origin https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ github.ref_name }}
           ###### START GitSubmodule ######
@@ -138,6 +136,7 @@ jobs:
           git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
           ###### END GitSubmodule ######
           git add -A
+          git reset -- .gitmodules
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
@@ -146,9 +145,8 @@ jobs:
           retry=0
           while [ "${retry}" -lt 3 ]
           do
-            cat .gitmodules
-            git status
-            git pull --allow-unrelated-histories https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
+            git reset -- .gitmodules
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
             git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
             ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m ${ppResult}"
