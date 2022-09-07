@@ -85,7 +85,8 @@ jobs:
           source variables
           # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
-          cd crc-app-deployment
+          cd app-deployment
+          # cd crc-app-deployment
           git checkout nonprd
           cd overlay/dev
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
@@ -150,7 +151,8 @@ jobs:
           source variables
           # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
           git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
-          cd crc-app-deployment
+          cd app-deployment
+          # cd crc-app-deployment
           git checkout nonprd
           cd overlay/sit
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
