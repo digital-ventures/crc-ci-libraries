@@ -125,6 +125,11 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           git add -A
+          echo "HELLO1"
+          git status
+          echo "HELLO2"
+          git status --ignored --untracked
+          echo "HELLO3"
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin]"
@@ -133,7 +138,7 @@ jobs:
           retry=0
           while [ "${retry}" -lt 3 ]
           do
-            echo "HELLO"
+            echo "HELLO4"
             git pull --recurse-submodules https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
             git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
             ppResult=$?
