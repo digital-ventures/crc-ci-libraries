@@ -125,12 +125,12 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          ./gradlew -x test -Prelease.useAutomaticVersion=true release
+          ./gradlew -x test -Prelease.useAutomaticVersion=true -Prelease.customUsername=${{ secrets.CRC_GIT_USER }} -Prelease.customPassword=${{ secrets.CRC_GIT_TOKEN }} release
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
+        # if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           skaffold build -q --tag ${{ github.ref_name }} > build.json
@@ -145,8 +145,8 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
+        # if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
           source variables
