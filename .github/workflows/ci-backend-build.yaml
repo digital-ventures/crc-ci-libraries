@@ -128,7 +128,7 @@ jobs:
           ./gradlew -x test -Prelease.useAutomaticVersion=true release
           git add -A
           git commit -a -m "[Gradle Release Plugin]"
-          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ git.repository }}.git
+          git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/${{ github.repository }}.git
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
