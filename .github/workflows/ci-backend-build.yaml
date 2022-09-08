@@ -130,7 +130,7 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          export TAG_VERSION=`cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//'`
+          echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
           cat gradle.properties
           ./gradlew -x test -Prelease.useAutomaticVersion=true release
           cat gradle.properties
@@ -144,7 +144,6 @@ jobs:
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           echo "TAG_VERSION = ${TAG_VERSION}"
           # skaffold build -q --tag ${{ github.ref_name }} > build.json
-          echo "skaffold build -q --tag ${{ env.TAG_VERSION }}"
           skaffold build -q --tag ${TAG_VERSION} > build.json
           echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
