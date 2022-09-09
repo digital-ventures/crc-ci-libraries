@@ -50,8 +50,8 @@ jobs:
 
       - name: SetupGradle
         uses: gradle/gradle-build-action@v2
-        # with:
-        #   gradle-version: 8.0
+        with:
+          gradle-version: 7.2
 
       - name: Dump GitHub context
         env:
