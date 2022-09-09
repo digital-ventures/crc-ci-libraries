@@ -48,7 +48,7 @@ jobs:
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
 
-      - name: Setup Gradle
+      - name: SetupGradle
         uses: gradle/gradle-build-action@v2
         # with:
         #   gradle-version: 8.0
