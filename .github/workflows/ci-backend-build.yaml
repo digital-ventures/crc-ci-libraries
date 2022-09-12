@@ -73,6 +73,7 @@ jobs:
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
+          skaffold build -vdebug
           skaffold build -q > build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
