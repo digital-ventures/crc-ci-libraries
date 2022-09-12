@@ -42,7 +42,8 @@ jobs:
         uses: yokawasa/action-setup-kube-tools@v0.7.1
         with:
           kustomize: '3.9.1' #'4.5.7'
-          skaffold: '1.17.2' #'1.39.1'
+          skaffold: '1.39.1'
+          # skaffold: '1.17.2' #'1.39.1'
           helm: '3.9.4'
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
@@ -67,5 +68,5 @@ jobs:
       - name: CleanTest
         # if: github.ref == 'refs/heads/central-release' || github.ref == 'refs/heads/master' || contains( github.ref_name, 'CRC' ) || contains( github.ref_name, 'production' )
         run: |
-          echo "HELLO"
-          # ./gradlew clean test
+          # echo "HELLO"
+          gradlew clean test
