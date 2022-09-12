@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: AddGIT
-        run: apk --no-cache add git jq
+        run: apk --no-cache add git jq tar
 
       - name: GitConfig
         run: |
@@ -64,6 +64,7 @@ jobs:
         if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
         run: |
           echo "HELLO"
+          # gradle clean test
           # ./gradlew clean test
 
 ##### Release overlay/dev
@@ -133,7 +134,8 @@ jobs:
         run: |
           echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
           cat gradle.properties
-          ./gradlew -x test -Prelease.useAutomaticVersion=true release
+          gradle -x test -Prelease.useAutomaticVersion=true release
+          # ./gradlew -x test -Prelease.useAutomaticVersion=true release
           cat gradle.properties
           echo "TAG_VERSION = ${TAG_VERSION}"
 

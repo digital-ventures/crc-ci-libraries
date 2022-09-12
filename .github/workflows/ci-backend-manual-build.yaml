@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: AddGIT
-        run: apk --no-cache add git jq
+        run: apk --no-cache add git jq tar
 
       - name: GitConfig
         run: |
