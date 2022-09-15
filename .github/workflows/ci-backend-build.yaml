@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: GitSubmodule
-        if: ${{ env.crc_common_lib == 'true' }}
+#        if: ${{ env.crc_common_lib == 'true' }}
         run: |
           rm -rf central-common
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
