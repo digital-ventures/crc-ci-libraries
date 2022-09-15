@@ -134,6 +134,8 @@ jobs:
         run: |
           echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
           cat gradle.properties
+          ## DEBUG
+          find ./
           gradle -x test -Prelease.useAutomaticVersion=true release
           # ./gradlew -x test -Prelease.useAutomaticVersion=true release
           cat gradle.properties
