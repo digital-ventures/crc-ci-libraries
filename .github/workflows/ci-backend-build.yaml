@@ -26,8 +26,8 @@ jobs:
       - name: GitSubmodule
         run: |
           rm -rf central-common
-          # git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
-          git submodule add --force --name central-common https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/dv-bloc/central-common.git central-common central-common 
+          git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
+          # git submodule add --force --name central-common https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/dv-bloc/central-common.git central-common central-common 
           git submodule update --remote -f --init
           # git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
           # git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
