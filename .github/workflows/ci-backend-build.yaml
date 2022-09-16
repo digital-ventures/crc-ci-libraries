@@ -33,6 +33,7 @@ jobs:
           # git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
           # git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
           git reset .gitmodules
+          git checkout -- .gitmodules
 
       - name: DockerLogin
         uses: azure/docker-login@v1
