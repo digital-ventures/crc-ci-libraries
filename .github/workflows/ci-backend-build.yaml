@@ -22,7 +22,7 @@ jobs:
       - name: DEBUG
         run: |
           find ./
-          exit 1        
+#          exit 1        
 
 #      - name: GitConfig
 #        run: |
