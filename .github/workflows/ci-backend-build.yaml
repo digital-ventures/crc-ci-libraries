@@ -14,11 +14,11 @@ jobs:
         run: |
           echo ${{ secrets.CRC_GIT_USER }}
           echo ${{ secrets.SSH_PRIVATE_KEY }}
-          exit 1
+          #exit 1
     
       - uses: actions/checkout@v3
         with: 
-          ssh-key: '${{ secrets.SSH_PRIVATE_KEY }}'
+          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
           submodules: 'false'
 
