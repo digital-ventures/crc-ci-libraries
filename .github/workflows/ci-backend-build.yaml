@@ -67,10 +67,10 @@ jobs:
         
       - name: DEBUG
         run: |
-          ls -l /__w/
-          ls -l /__w/crc*/          
-          whoami
-          find /__w/ -exec ls -l {} \;
+          #ls -l /__w/
+          #ls -l /__w/crc*/          
+          #whoami
+          find ./
           # exit 1                
 
 ##### Test
