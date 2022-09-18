@@ -17,21 +17,6 @@ jobs:
         with: 
           ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
-          submodules: 'true'
-
-
-      - name: DEBUG
-        run: |
-          ls -l /__w/
-          ls -l /__w/crc*/          
-          whoami
-          # find /__w/ -exec ls -l {} \;
-          # exit 1        
-
-      - uses: actions/checkout@v3
-        with: 
-          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          ssh-strict: 'StrictHostKeyChecking=no'
           submodules: 'true'   #set-safe-directory option of checkout didn't work
 
       - name: GitConfig
@@ -156,8 +141,6 @@ jobs:
         run: |
           echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
           cat gradle.properties
-          ## DEBUG
-          find ./
           gradle -x test -Prelease.useAutomaticVersion=true release
           # ./gradlew -x test -Prelease.useAutomaticVersion=true release
           cat gradle.properties
