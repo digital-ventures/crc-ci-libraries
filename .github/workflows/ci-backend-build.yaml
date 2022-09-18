@@ -64,6 +64,14 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
+        
+      - name: DEBUG
+        run: |
+          ls -l /__w/
+          ls -l /__w/crc*/          
+          whoami
+          find /__w/ -exec ls -l {} \;
+          # exit 1                
 
 ##### Test
       - name: CleanTest
