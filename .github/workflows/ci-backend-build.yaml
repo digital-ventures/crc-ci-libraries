@@ -21,7 +21,9 @@ jobs:
 
       - name: DEBUG
         run: |
-          find /__w/
+          ls -l /__w/
+          ls -l /__w/crc*/          
+          find /__w/ -exec ls -l {} \;
           exit 1        
 
 #      - name: GitConfig
