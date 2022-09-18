@@ -10,10 +10,8 @@ jobs:
     # container: openjdk:15-jdk-alpine3.12
     steps:
 
-
       - name: AddGIT
         run: apk --no-cache add git jq tar openssh
-        
 
       - uses: actions/checkout@v3
         with: 
@@ -26,26 +24,25 @@ jobs:
           find ./
           exit 1        
 
-      - name: GitConfig
-        run: |
-          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
-          git config --global user.name ${{ secrets.CRC_GIT_USER }}
-          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
-          git config --global pull.rebase false 
-
-
-      - uses: actions/checkout@v3
-
-      - name: GitSubmodule
-#        if: ${{ env.crc_common_lib == 'true' }}
-        run: |
-          # rm -rf central-common
-          # git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
-          # git submodule add --force --name central-common https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/dv-bloc/central-common.git central-common central-common 
-          git submodule update --remote -f --init
-          # git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
-          # git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
-
+#      - name: GitConfig
+#        run: |
+#          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+#          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+#          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+#          git config --global pull.rebase false 
+#
+#
+#      - uses: actions/checkout@v3
+#
+#      - name: GitSubmodule
+#        run: |
+#          # rm -rf central-common
+#          # git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
+#          # git submodule add --force --name central-common https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/dv-bloc/central-common.git central-common central-common 
+#          git submodule update --remote -f --init
+#          # git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
+#          # git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
+#
       - name: DockerLogin
         uses: azure/docker-login@v1
         with:
