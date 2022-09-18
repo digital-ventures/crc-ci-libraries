@@ -13,7 +13,7 @@ jobs:
       - name: DEBUG
         run: |
           echo ${{ secrets.CRC_GIT_USER }}
-          echo ${{ secrets.SSH_PRIVATE_KEY }}
+          # echo ${{ secrets.SSH_PRIVATE_KEY }}
     
       - uses: actions/checkout@v3
         with: 
