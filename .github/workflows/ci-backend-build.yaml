@@ -10,21 +10,6 @@ jobs:
     # container: openjdk:15-jdk-alpine3.12
     steps:
 
-      - name: DEBUG
-        run: |
-          echo ${{ secrets.CRC_GIT_USER }}
-          # echo ${{ secrets.SSH_PRIVATE_KEY }}
-    
-      - uses: actions/checkout@v3
-        with: 
-          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          ssh-strict: 'StrictHostKeyChecking=no'
-          submodules: 'false'
-
-      - name: DEBUG
-        run: |
-          find ./
-          exit 1
 
       - name: AddGIT
         run: apk --no-cache add git jq tar
@@ -35,6 +20,17 @@ jobs:
           git config --global user.name ${{ secrets.CRC_GIT_USER }}
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
           git config --global pull.rebase false 
+
+      - uses: actions/checkout@v3
+        with: 
+          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          ssh-strict: 'StrictHostKeyChecking=no'
+          submodules: 'false'
+
+      - name: DEBUG
+        run: |
+          find ./
+          exit 1
 
       - uses: actions/checkout@v3
 
