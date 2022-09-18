@@ -30,9 +30,9 @@ jobs:
 
       - name: GitConfig
         run: |
-          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
-#          git config --global user.name ${{ secrets.CRC_GIT_USER }}
-#          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+#          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 #          git config --global pull.rebase false 
 #
 #
@@ -142,6 +142,14 @@ jobs:
           done
           echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
           echo -e "\e[92m FINISH UpdateDeploymentSnapshotTemplate \e[0m"
+
+
+      - uses: actions/checkout@v3
+        with: 
+          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          ssh-strict: 'StrictHostKeyChecking=no'
+          submodules: 'true'
+
 
 ##### Test Before Release overlay/sit
       - name: PrepareRelease
