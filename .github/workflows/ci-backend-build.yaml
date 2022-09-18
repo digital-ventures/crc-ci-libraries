@@ -19,7 +19,7 @@ jobs:
         with: 
           ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
-          submodules: 'false'
+          submodules: 'true'
 
       - name: DEBUG
         run: |
