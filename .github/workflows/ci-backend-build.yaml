@@ -12,7 +12,7 @@ jobs:
 
 
       - name: AddGIT
-        run: apk --no-cache add git jq tar
+        run: apk --no-cache add git jq tar openssh
 
       - name: GitConfig
         run: |
