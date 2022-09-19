@@ -4,7 +4,7 @@ jobs:
   BuildAndRelease:
     # runs-on: ubuntu-latest
     runs-on: [self-hosted, crc]
-    container: node:15.5.1-alpine3.12
+    container: node:14.15.4-alpine3.12
     env: 
       NEXUS_NAME: nexus-central
     steps:
