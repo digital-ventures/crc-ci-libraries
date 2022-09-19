@@ -2,8 +2,8 @@ on:
   workflow_call:
 jobs:
   BuildAndRelease:
-    runs-on: ubuntu-latest
-    # runs-on: [self-hosted, crc]
+    # runs-on: ubuntu-latest
+    runs-on: [self-hosted, crc]
     container: node:14.15.4-alpine3.12
     env: 
       NEXUS_NAME: nexus-central
