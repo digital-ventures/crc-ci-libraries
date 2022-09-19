@@ -128,13 +128,12 @@ jobs:
           npm install --legacy-peer-deps
           echo "2"
           npm install -g release
-          echo "2.1"
-          echo "3"
+          chmod 644 package-lock.json
           git status
+          echo "3"
           git add -A
-          echo "4"
           git diff --cached --exit-code --quiet
-          echo "5"
+          echo "4"
           echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
           npm run release
           npm run prepare-snapshot
