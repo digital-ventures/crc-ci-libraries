@@ -1,0 +1,189 @@
+on:
+  workflow_call:
+jobs:
+  BuildAndRelease:
+    runs-on: ubuntu-latest
+    container: openjdk:17-jdk-alpine3.14
+    env: 
+      NEXUS_NAME: nexus-central
+    steps:
+      - name: AddAPK
+        run: apk --no-cache add git jq tar openssh
+
+      - uses: actions/checkout@v3
+        with: 
+          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          ssh-strict: 'StrictHostKeyChecking=no'
+          submodules: 'true'   #set-safe-directory option of checkout didn't work
+
+      - name: GitConfig
+        run: |
+          git config --global user.name ${{ secrets.CRC_GIT_USER }}
+          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
+
+      - name: DockerLogin
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.CRC_ACR_REGISTRY }}
+          username: ${{ secrets.CRC_ACR_USER }}
+          password: ${{ secrets.CRC_ACR_TOKEN }}
+          
+      - name: BuildTools
+        uses: yokawasa/action-setup-kube-tools@v0.7.1
+        with:
+          kustomize: '3.9.1' #'4.5.7'
+          # skaffold: '1.39.1'
+          skaffold: '1.17.2' #'1.39.1'
+          helm: '3.9.4'
+          kubectl: '1.17.8' #'1.20.2'
+          yq: '4.7.1'
+
+      - name: SetupNodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 15.5.1
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+##### Release overlay/dev
+      - name: BuildContainerSnapshotImage #MERGED TRIGGER
+        # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
+        run: |
+          echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
+          skaffold build -q > build.json
+          echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
+          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+          SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+          echo IMG_NAME="${IMG_NAME}" >> variables
+          echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+          echo IMG_VERSION="${IMG_VERSION}" >> variables
+          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
+
+      - name: UpdateDeploymentSnapshotTemplate #MERGED TRIGGER
+        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
+        run: |
+          echo -e "\e[92m START UpdateDeploymentSnapshotTemplate \e[0m"
+          source variables
+          # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+          cd app-deployment
+          # cd crc-app-deployment
+          git checkout nonprd
+          cd overlay/dev
+          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          cd ../..
+          git add -A
+          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
+          if [[ "${NOCHG}" != "0" ]]; then
+            git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
+          fi
+          ###### Handle Pull & Push Retry ######
+          retry=0
+          while [ "${retry}" -lt 3 ]
+          do
+            # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            ppResult=$?
+            echo -e "\e[31m P&P Result \e[0m : \e[96m ${ppResult}"
+            if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
+              echo -e "\e[92m Update Deployment success \e[0m"
+              break
+            else
+              retry=$((retry+1))
+              if [ "${retry}" -eq 3 ]; then
+                echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m"
+                exit 1
+              else
+                echo -e "\e[93m Update Deployment failed, retrying : \e[96m ${retry} \e[0m"
+              fi
+            fi
+          done
+          echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
+          echo -e "\e[92m FINISH UpdateDeploymentSnapshotTemplate \e[0m"
+
+##### Test Before Release overlay/sit
+      - name: PrepareRelease
+        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        run: |
+          echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
+          npm install --legacy-peer-deps --force
+          npm install -g release --force
+          git add -A
+          git diff --cached --exit-code --quiet
+          echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
+          npm run release
+          npm run prepare-snapshot
+          echo "TAG_VERSION = ${TAG_VERSION}"
+
+##### Release overlay/sit
+      - name: BuildContainerReleaseImage
+        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
+        run: |
+          echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
+          echo "TAG_VERSION = ${TAG_VERSION}"
+          # skaffold build -q --tag ${{ github.ref_name }} > build.json
+          skaffold build -q --tag ${TAG_VERSION} > build.json
+          echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
+          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+          SVC_NAME=$(echo ${IMG_NAME} | grep -o '[^/]*$')
+          echo IMG_NAME="${IMG_NAME}" >> variables
+          echo IMG_WITH_TAG="${IMG_WITH_TAG}" >> variables
+          echo IMG_VERSION="${IMG_VERSION}" >> variables
+          echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
+
+      - name: UpdateDeploymentReleaseTemplate
+        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
+        run: |
+          echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
+          source variables
+          # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+          git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+          cd app-deployment
+          # cd crc-app-deployment
+          git checkout nonprd
+          cd overlay/sit
+          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          cd ../..
+          git add -A
+          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
+          if [[ "${NOCHG}" != "0" ]]; then
+            git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
+          fi
+          ###### Handle Pull & Push Retry ######
+          retry=0
+          while [ "${retry}" -lt 3 ]
+          do
+            # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
+            git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            ppResult=$?
+            echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult";
+            if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
+              echo -e "\e[92m Update Deployment success \e[0m"
+              break
+            else
+              retry=$((retry+1))
+              if [ "${retry}" -eq 3 ]; then
+                echo -e "\e[31m Update Deployment failed, limit exceeded, MANUAL RETRY NEEDED \e[0m"
+                exit 1
+              else
+                echo -e "\e[93m Update Deployment failed, retrying : \e[96m $retry \e[0m"
+              fi
+            fi
+          done
+          echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
+          echo -e "\e[92m FINISH UpdateDeploymentReleaseTemplate \e[0m"
