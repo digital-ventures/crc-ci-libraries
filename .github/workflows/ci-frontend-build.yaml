@@ -123,10 +123,10 @@ jobs:
           git remote set-url origin https://github.com/${{ github.repository }}
           git checkout central-release
           echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
-          chmod 777 package-lock.json
+          # chmod 777 package-lock.json
           npm install --legacy-peer-deps
           npm install -g release
-          chmod 755 package-lock.json
+          # chmod 755 package-lock.json
           git add -A
           git commit -m "update package-lock.json"
           npm run release
