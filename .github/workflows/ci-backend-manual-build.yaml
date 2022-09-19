@@ -9,9 +9,7 @@ jobs:
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
     steps:
-      - uses: actions/checkout@v3
-
-      - name: AddGIT
+      - name: AddAPK
         run: apk --no-cache add git jq tar openssh
 
       - uses: actions/checkout@v3
@@ -22,11 +20,9 @@ jobs:
 
       - name: GitConfig
         run: |
-          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
           git config --global user.name ${{ secrets.CRC_GIT_USER }}
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
-
-      # - uses: actions/checkout@v3
+          git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 
       # - name: GitSubmodule
       #   run: |
