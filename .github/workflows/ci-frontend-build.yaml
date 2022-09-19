@@ -120,7 +120,7 @@ jobs:
           echo "1"
           id
           ls -l package-lock.json
-          chmod 644 package-lock.json
+          chmod 777 package-lock.json
           ls -l package-lock.json
           npm install --legacy-peer-deps
           echo "2"
