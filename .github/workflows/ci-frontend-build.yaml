@@ -121,21 +121,20 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "1"
-          id
-          ls -l package-lock.json
-          cat package-lock.json
+          git remote set-url origin https://github.com/${{ GITHUB_REPOSITORY }}
+          git checkout central-release
           chmod 777 package-lock.json
-          ls -l package-lock.json
-          npm install --legacy-peer-deps
           echo "2"
+          npm install --legacy-peer-deps
+          echo "3"
           npm install -g release
           chmod 755 package-lock.json
-          ls -l package-lock.json
-          cat package-lock.json
-          git status
-          echo "3"
-          npm run release
           echo "4"
+          git add -A
+          echo "5"
+          git diff --cached --exit-code --quiet && echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
+          npm run release
+          echo "6"
           npm run prepare-snapshot
 
 ##### Release overlay/sit
