@@ -114,7 +114,6 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
           npm install --legacy-peer-deps --force
           npm install -g release --force
           git add -A
@@ -122,7 +121,6 @@ jobs:
           echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
           npm run release
           npm run prepare-snapshot
-          echo "TAG_VERSION = ${TAG_VERSION}"
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
