@@ -16,7 +16,7 @@ jobs:
           submodules: 'false'
 
       - name: AddGIT
-        run: apk --no-cache add git tar
+        run: apk --no-cache add git tar openssh
 
       - uses: actions/checkout@v3
         with: 
