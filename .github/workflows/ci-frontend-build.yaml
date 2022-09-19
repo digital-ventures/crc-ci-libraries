@@ -131,11 +131,8 @@ jobs:
           chmod 644 package-lock.json
           git status
           echo "3"
-          git add -A
-          git diff --cached --exit-code --quiet
-          echo "4"
-          echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
           npm run release
+          echo "4"
           npm run prepare-snapshot
 
 ##### Release overlay/sit
