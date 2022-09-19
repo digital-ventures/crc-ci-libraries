@@ -123,6 +123,7 @@ jobs:
           echo "1"
           id
           ls -l package-lock.json
+          cat package-lock.json
           chmod 777 package-lock.json
           ls -l package-lock.json
           npm install --legacy-peer-deps
@@ -130,6 +131,7 @@ jobs:
           npm install -g release
           chmod 755 package-lock.json
           ls -l package-lock.json
+          cat package-lock.json
           git status
           echo "3"
           npm run release
