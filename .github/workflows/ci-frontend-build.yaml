@@ -121,7 +121,7 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "1"
-          git remote set-url origin https://github.com/${{ GITHUB_REPOSITORY }}
+          git remote set-url origin https://github.com/${{ github.repository }}
           git checkout central-release
           chmod 777 package-lock.json
           echo "2"
