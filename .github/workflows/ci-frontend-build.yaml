@@ -120,22 +120,18 @@ jobs:
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
-          echo "1"
           git remote set-url origin https://github.com/${{ github.repository }}
           git checkout central-release
+          echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
           chmod 777 package-lock.json
-          echo "2"
           npm install --legacy-peer-deps
-          echo "3"
           npm install -g release
           chmod 755 package-lock.json
-          echo "4"
           git add -A
-          echo "5"
           git commit -m "update package-lock.json"
           npm run release
-          echo "6"
           npm run prepare-snapshot
+          echo "TAG_VERSION = ${TAG_VERSION}"
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
