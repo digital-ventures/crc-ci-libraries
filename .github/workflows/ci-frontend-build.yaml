@@ -125,6 +125,7 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "1"
+          chown -R $(whoami) .npm package-lock.json
           npm ci --ignore-scripts
           echo "2"
           npm install -g release
