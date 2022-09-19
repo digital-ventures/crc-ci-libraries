@@ -132,8 +132,7 @@ jobs:
           echo "4"
           git add -A
           echo "5"
-          git diff --cached --exit-code --quiet
-          echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
+          git commit -m "update package-lock.json"
           npm run release
           echo "6"
           npm run prepare-snapshot
