@@ -3,7 +3,7 @@ on:
 jobs:
   BuildAndRelease:
     runs-on: ubuntu-latest
-    container: openjdk:17-jdk-alpine3.14
+    container: node:15.5.1-alpine3.12
     env: 
       NEXUS_NAME: nexus-central
     steps:
