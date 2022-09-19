@@ -129,8 +129,6 @@ jobs:
           echo "2"
           npm install -g release
           echo "3"
-          npm audit fix --force
-          echo "4"
           git add -A
           git diff --cached --exit-code --quiet
           echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
