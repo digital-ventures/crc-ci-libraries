@@ -47,6 +47,13 @@ jobs:
           # cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: CacheDependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -118,7 +125,7 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "1"
-          npm install --legacy-peer-deps
+          npm ci --ignore-scripts
           echo "2"
           npm install -g release
           echo "3"
