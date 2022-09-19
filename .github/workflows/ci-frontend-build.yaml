@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: 15.5.1
           # cache: 'npm'
-          # cache-dependency-path: package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Dump GitHub context
         env:
@@ -126,6 +126,8 @@ jobs:
           echo "2"
           npm install -g release
           echo "3"
+          npm audit fix
+          echo "4"
           git add -A
           git diff --cached --exit-code --quiet
           echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
