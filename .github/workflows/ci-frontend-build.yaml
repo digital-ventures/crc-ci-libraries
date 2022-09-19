@@ -3,6 +3,7 @@ on:
 jobs:
   BuildAndRelease:
     runs-on: ubuntu-latest
+    # runs-on: [self-hosted, crc]
     container: node:15.5.1-alpine3.12
     env: 
       NEXUS_NAME: nexus-central
@@ -43,7 +44,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 15.5.1
-          cache: 'npm'
+          # cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Dump GitHub context
