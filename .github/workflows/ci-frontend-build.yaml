@@ -123,6 +123,7 @@ jobs:
           git remote set-url origin https://github.com/${{ github.repository }}
           git checkout central-release
           echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
+          echo "TAG_VERSION = ${TAG_VERSION}"
           # chmod 777 package-lock.json
           npm install --legacy-peer-deps
           npm install -g release
@@ -131,7 +132,7 @@ jobs:
           git commit -m "update package-lock.json"
           npm run release
           npm run prepare-snapshot
-          echo "TAG_VERSION = ${TAG_VERSION}"
+          
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
