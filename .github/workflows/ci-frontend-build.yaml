@@ -128,7 +128,8 @@ jobs:
           npm install --legacy-peer-deps
           echo "2"
           npm install -g release
-          chmod 644 package-lock.json
+          chmod 655 package-lock.json
+          ls -l package-lock.json
           git status
           echo "3"
           npm run release
