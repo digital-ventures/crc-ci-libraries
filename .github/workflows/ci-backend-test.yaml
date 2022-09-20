@@ -24,15 +24,6 @@ jobs:
           git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
           git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 
-      # - name: GitSubmodule
-      #   run: |
-      #     rm -rf central-common
-      #     git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common.git central-common 
-      #     # git submodule add --force --name central-common https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/dv-bloc/central-common.git central-common central-common 
-      #     git submodule update --remote -f --init
-      #     # git submodule add --force --name central-common https://github.com/digital-ventures/crc-common.git central-common
-      #     # git submodule add --force --name central-common https://gitlab.com/dv-bloc/central-common.git central-common
-
       - name: DockerLogin
         uses: azure/docker-login@v1
         with:
@@ -73,13 +64,13 @@ jobs:
               -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
 
 ##### Test
-      - name: CleanTest
-        run: |
-          echo "HELLO"
-
       # - name: CleanTest
-      #   uses: gradle/gradle-build-action@v2
-      #   with:
-      #     gradle-version: 7.2
-      #     arguments: |
-      #         clean test
+      #   run: |
+      #     echo "HELLO"
+
+      - name: CleanTest
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.2
+          arguments: |
+              clean test
