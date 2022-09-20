@@ -41,27 +41,24 @@ jobs:
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
 
-      - name: SetupGradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 7.2
-        
       # - name: Dump GitHub context
       #   env:
       #     GITHUB_CONTEXT: ${{ toJson(github) }}
       #   run: echo "$GITHUB_CONTEXT"
 
 ##### CodeScan
-      - name: CodeScan
+      - name: SonarQubeScan
         if: contains(github.ref_name, 'SONAR')
-        uses: gradle/gradle-build-action@v2
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.CRC_SONARQUBE_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.CRC_SONARQUBE_HOST_URL }}
+          LC_ALL: "en_US.UTF-8"
         with:
-          gradle-version: 7.2
-          arguments: |
-              sonarqube
-              -Dsonar.login=${{ secrets.CRC_SONARQUBE_TOKEN }}
-              -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
-              -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
+          projectBaseDir: src
+          args: >
+            -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
+            -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }}-${{ github.ref_name }}
 
 ##### Test
       # - name: CleanTest
