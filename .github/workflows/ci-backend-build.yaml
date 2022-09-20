@@ -56,8 +56,14 @@ jobs:
         if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
         run: |
           echo "HELLO"
-          # gradle clean test
-          # ./gradlew clean test
+
+      # - name: CleanTest
+      #   if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
+      #   uses: gradle/gradle-build-action@v2
+      #   with:
+      #     gradle-version: 7.2
+      #     arguments: |
+      #         clean test
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER
@@ -65,7 +71,6 @@ jobs:
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
-          skaffold build -vdebug
           skaffold build -q > build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -123,14 +128,33 @@ jobs:
 
 
 ##### Test Before Release overlay/sit
-      - name: PrepareRelease
+      - name: GetTagVersion
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
-          cat gradle.properties
-          gradle -x test -Prelease.useAutomaticVersion=true release
-          cat gradle.properties
-          echo "TAG_VERSION = ${TAG_VERSION}"
+
+      - name: TagVersion
+        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        run: |
+          echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
+
+      - name: PrepareRelease
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.2
+          arguments: |
+              release
+              -x test
+              -Prelease.useAutomaticVersion=true
+
+      # - name: PrepareRelease
+      #   if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+      #   run: |
+      #     echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
+      #     cat gradle.properties
+      #     gradle -x test -Prelease.useAutomaticVersion=true release
+      #     cat gradle.properties
+      #     echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
@@ -138,8 +162,8 @@ jobs:
         # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
-          echo "TAG_VERSION = ${TAG_VERSION}"
-          skaffold build -q --tag ${TAG_VERSION} > build.json
+          echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
+          skaffold build -q --tag ${{ env.TAG_VERSION }} > build.json
           echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
