@@ -3,7 +3,8 @@ on:
 jobs:
   Test:
     # runs-on: ubuntu-latest
-    runs-on: [self-hosted, crc]
+    # runs-on: [self-hosted, crc]
+    runs-on: [self-hosted, b2p]    
     container: openjdk:17-jdk-alpine3.14
     # container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
     # container: openjdk:18-jdk-alpine3.15
