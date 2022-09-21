@@ -27,7 +27,9 @@ jobs:
 
       - name: GitSubmodule
         run: |
+          git submodule add --force --name central-common https://${{ CRC_GIT_USER }}:${{ CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
           git submodule update --remote -f --init
+          git submodule add --force --name central-common ../crc-common.git central-common
 
       - name: DockerLogin
         uses: azure/docker-login@v1
