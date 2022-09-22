@@ -30,7 +30,7 @@ jobs:
           rm -rf central-common
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
           git submodule update --remote -f --init
-          git checkout -- .gitmodules
+          git checkout HEAD .gitmodules
         continue-on-error: true
 
       - name: DockerLogin
@@ -100,6 +100,7 @@ jobs:
           cd overlay/dev
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
+          git restore --staged central-common
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
@@ -194,6 +195,7 @@ jobs:
           cd overlay/sit
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
+          git restore --staged central-common
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
