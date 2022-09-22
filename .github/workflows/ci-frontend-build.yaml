@@ -54,10 +54,10 @@ jobs:
       - name: SetupCache
         uses: c-hive/gha-npm-cache@v1
 
-      # - name: Dump GitHub context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJson(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER
@@ -126,11 +126,19 @@ jobs:
         run: |
           git remote set-url origin https://github.com/${{ github.repository }}
           git checkout central-release
+          echo '1'
           npm install --legacy-peer-deps
+          echo '2'
           npm install -g release
+          echo '3'
           git add -A
+          echo '4'
           git commit -m "update package-lock.json"
+          echo '5'
+          git status
+          echo '6'
           npm run release
+          echo '7'
           echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
           npm run prepare-snapshot
           
