@@ -151,6 +151,8 @@ jobs:
               release
               -x test
               -Prelease.useAutomaticVersion=true
+              -Prelease.failOnCommitNeeded=true
+              -Prelease.failOnUpdateNeeded=true
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
