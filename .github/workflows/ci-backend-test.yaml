@@ -58,7 +58,7 @@ jobs:
 ##### CodeScan
       - name: SonarQubeScan
         # if: contains(github.ref_name, 'SONAR')
-        if: github.ref_type == 'tag' && github.event.head_commit.message != null && github.event.head_commit.message != '' && contains(github.ref_name, 'SONAR')
+        if: github.ref_type == 'tag' && contains(github.ref_name, 'SONAR')
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.CRC_SONARQUBE_TOKEN }}
