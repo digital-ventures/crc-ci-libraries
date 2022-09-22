@@ -120,26 +120,19 @@ jobs:
           echo -e "\e[92m FINISH UpdateDeploymentSnapshotTemplate \e[0m"
 
 ##### Test Before Release overlay/sit
-      - name: PrepareRelease
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        run: |
-          git remote set-url origin https://github.com/${{ github.repository }}
-          git checkout central-release
-          echo '1'
-          npm install --legacy-peer-deps
-          echo '2'
-          npm install -g release
-          echo '3'
-          git add -A
-          echo '4'
-          git commit -m "update package-lock.json"
-          echo '5'
-          git status
-          echo '6'
-          npm run release
-          echo '7'
-          echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
-          npm run prepare-snapshot
+      # - name: PrepareRelease
+      #   if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+      #   run: |
+      #     git remote set-url origin https://github.com/${{ github.repository }}
+      #     git checkout central-release
+      #     npm install --legacy-peer-deps
+      #     npm install -g release
+      #     git add -A
+      #     git commit -m "update package-lock.json"
+      #     git status
+      #     npm run release
+      #     echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
+      #     npm run prepare-snapshot
           
 
 ##### Release overlay/sit
