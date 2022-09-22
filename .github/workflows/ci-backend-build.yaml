@@ -26,6 +26,7 @@ jobs:
           git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 
       - name: GitSubmodule
+        if: github.ref != 'refs/heads/central-release' 
         run: |
           rm -rf central-common
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
@@ -142,11 +143,6 @@ jobs:
         run: |
           echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
 
-      - name: RevertGitSubmodule
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
-        run: |
-          rm -rf central-common
-
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         uses: gradle/gradle-build-action@v2
@@ -160,6 +156,7 @@ jobs:
       - name: GitSubmoduleForReleaseImage
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
+          rm -rf central-common
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
           git submodule update --remote -f --init
           git checkout HEAD .gitmodules
