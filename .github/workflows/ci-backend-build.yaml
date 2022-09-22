@@ -27,6 +27,7 @@ jobs:
 
       - name: GitSubmodule
         run: |
+          rm -rf central-common
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
           git submodule update --remote -f --init
           git submodule add --force --name central-common ../crc-common.git central-common
@@ -99,8 +100,8 @@ jobs:
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
           git add -A
-          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           git reset -- central-common
+          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
           fi
@@ -194,8 +195,8 @@ jobs:
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
           git add -A
-          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           git reset -- central-common
+          git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
           fi
