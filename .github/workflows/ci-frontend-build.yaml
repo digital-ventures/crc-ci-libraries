@@ -142,7 +142,8 @@ jobs:
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
-          skaffold build -q --tag ${{ env.TAG_VERSION }} > build.json
+          skaffold build -q --tag 1.6.1 > build.json
+          # skaffold build -q --tag ${{ env.TAG_VERSION }} > build.json
           echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
