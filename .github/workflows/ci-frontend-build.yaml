@@ -9,7 +9,7 @@ jobs:
       NEXUS_NAME: nexus-central
     steps:
       - name: AddAPK
-        run: apk --no-cache add git jq tar openssh
+        run: apk --no-cache add git jq tar openssh docker-cli
 
       - uses: actions/checkout@v3
         with: 
