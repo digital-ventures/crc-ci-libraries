@@ -76,6 +76,7 @@ jobs:
       #     echo "HELLO"
 
       - name: CleanTest
+        if: github.ref_type != 'tag' && !(contains(github.ref_name, 'SONAR'))
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
