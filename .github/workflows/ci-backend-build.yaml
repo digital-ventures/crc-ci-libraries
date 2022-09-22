@@ -28,7 +28,7 @@ jobs:
       - name: GitSubmodule
         run: |
           git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
-          git submodule update --remote -f --init
+          git submodule update --recursive --remote --merge --force --init
           git submodule add --force --name central-common ../crc-common.git central-common
         continue-on-error: true
 
@@ -100,6 +100,7 @@ jobs:
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
+          git reset -- central-common
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
           fi
@@ -194,6 +195,7 @@ jobs:
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
+          git reset -- central-common
           if [[ "${NOCHG}" != "0" ]]; then
             git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
           fi
