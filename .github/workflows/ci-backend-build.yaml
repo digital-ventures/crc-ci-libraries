@@ -76,6 +76,7 @@ jobs:
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
           skaffold build -q > build.json
+          cat build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
