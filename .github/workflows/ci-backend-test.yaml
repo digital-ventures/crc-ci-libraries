@@ -50,10 +50,10 @@ jobs:
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
 
-      # - name: Dump GitHub context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJson(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
 ##### CodeScan
       - name: SonarQubeScan
