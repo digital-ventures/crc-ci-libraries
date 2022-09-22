@@ -44,8 +44,8 @@ jobs:
         uses: yokawasa/action-setup-kube-tools@v0.7.1
         with:
           kustomize: '3.9.1' #'4.5.7'
-          # skaffold: '1.39.1'
-          skaffold: '1.17.2' #'1.39.1'
+          skaffold: '1.39.1'
+          # skaffold: '1.17.2' #'1.39.1'
           helm: '3.9.4'
           kubectl: '1.17.8' #'1.20.2'
           yq: '4.7.1'
@@ -76,7 +76,6 @@ jobs:
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
           skaffold build -q > build.json
-          cat build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
