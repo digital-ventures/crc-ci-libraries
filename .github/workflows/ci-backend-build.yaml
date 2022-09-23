@@ -97,7 +97,7 @@ jobs:
           # cd crc-app-deployment
           git checkout nonprd
           cd overlay/dev
-          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          kustomize edit set image ${IMG_NAME}=${IMG_WITH_TAG}
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
@@ -183,7 +183,7 @@ jobs:
           # cd crc-app-deployment
           git checkout nonprd
           cd overlay/sit
-          kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
+          kustomize edit set image ${IMG_NAME}=${IMG_WITH_TAG}
           cd ../..
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
