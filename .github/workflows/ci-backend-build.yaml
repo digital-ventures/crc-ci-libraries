@@ -102,7 +102,7 @@ jobs:
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
-            git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
+            git commit -a -m "[Gradle Release Plugin] [${IMG_NAME}:${IMG_VERSION}]"
           fi
           ###### Handle Pull & Push Retry ######
           retry=0
@@ -188,7 +188,7 @@ jobs:
           git add -A
           git diff --cached --exit-code --quiet && NOCHG="0" || echo -e "\e[96m Detected Changes"
           if [[ "${NOCHG}" != "0" ]]; then
-            git commit -a -m "[Gradle Release Plugin] [${IMG_WITH_TAG}]"
+            git commit -a -m "[Gradle Release Plugin] [${IMG_NAME}:${IMG_VERSION}]"
           fi
           ###### Handle Pull & Push Retry ######
           retry=0
