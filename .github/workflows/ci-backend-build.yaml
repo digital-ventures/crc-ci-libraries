@@ -5,7 +5,7 @@ jobs:
     # runs-on: ubuntu-latest
     # runs-on: [self-hosted, crc]
     runs-on: [self-hosted, b2p]
-    # container: openjdk:17-jdk-alpine3.14
+    container: openjdk:17-jdk-alpine3.14
     # container: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
@@ -31,12 +31,6 @@ jobs:
       - name: GitSubmodule
         run: |
           git pull --recurse-submodules
-
-      - name: SetUpJDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
 
       # - name: GitSubmodule
       #   run: |
