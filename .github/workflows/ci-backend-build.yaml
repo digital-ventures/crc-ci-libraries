@@ -23,6 +23,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CRC_GIT_TOKEN }}
           recursive: true
+          ref: ${GITHUB_REF_NAME}
 
       - name: GitConfig
         run: |
