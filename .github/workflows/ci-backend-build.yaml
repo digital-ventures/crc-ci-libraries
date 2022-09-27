@@ -13,9 +13,6 @@ jobs:
       # - name: AddAPK
       #   run: apk --no-cache add git jq tar openssh
 
-      # - name: AddAPT
-      #   run: apt install git jq tar openssh
-
       - name: CheckOut
         uses: actions/checkout@v3
         with: 
@@ -35,6 +32,11 @@ jobs:
         run: |
           git submodule update --init --recursive
           git submodule update --recursive --remote
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
 
       # - name: GitSubmodule
       #   run: |
@@ -67,7 +69,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
-          java-version: 17
 
       - name: Dump GitHub context
         env:
@@ -80,7 +81,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
-          java-version: 17
           arguments: |
               clean test
 
@@ -165,7 +165,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
-          java-version: 17
           arguments: |
               release
               -x test
