@@ -11,7 +11,8 @@ jobs:
       - name: AddAPK
         run: apk --no-cache add git jq tar openssh docker-cli
 
-      - uses: actions/checkout@v3
+      - name: CheckOut
+        uses: actions/checkout@v3
         with: 
           ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
