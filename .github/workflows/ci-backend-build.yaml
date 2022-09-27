@@ -31,7 +31,9 @@ jobs:
       - name: GitSubmodule
         run: |
           git version
-          git submodule update --remote -f --init
+          git submodule sync
+          git -c protocol.version=2 submodule update --init --force
+          git submodule foreach git config --local gc.auto 0
 
       # - name: GitSubmodule
       #   run: |
