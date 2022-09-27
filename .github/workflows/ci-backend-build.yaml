@@ -30,10 +30,10 @@ jobs:
       
       - name: GitSubmodule
         run: |
-          git submodule update --init --recursive
-          git submodule update --recursive --remote
+          git pull --recurse-submodules
 
-      - uses: actions/setup-java@v3
+      - name: SetUpJDK
+        uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
@@ -155,10 +155,6 @@ jobs:
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
-          pwd
-          ls -l
-          cat .gitmodules
-          git status
 
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
