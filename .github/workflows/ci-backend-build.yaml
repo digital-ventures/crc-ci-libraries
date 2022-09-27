@@ -30,11 +30,7 @@ jobs:
       
       - name: GitSubmodule
         run: |
-          ls -l b2p-common/
-          cat gradle.properties
           git pull --recurse-submodules
-          ls -l b2p-common/
-          cat gradle.properties
 
       - name: SetUpJDK
         uses: actions/setup-java@v3
