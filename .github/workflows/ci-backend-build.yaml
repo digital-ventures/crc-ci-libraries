@@ -16,6 +16,7 @@ jobs:
       - name: CheckOut
         uses: actions/checkout@v2
         with: 
+          repository: ${GITHUB_REPOSITORY}
           ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
           submodules: true   #set-safe-directory option of checkout didn't work
@@ -30,10 +31,8 @@ jobs:
       
       - name: GitSubmodule
         run: |
-          git submodule sync
-          git submodule update --remote --init --force --recursive
-          git submodule foreach git config --local gc.auto 0
-          git submodule update --remote -f --init
+          git submodule update --init --recursive
+          git submodule update --recursive --remote
 
       # - name: GitSubmodule
       #   run: |
