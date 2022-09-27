@@ -33,7 +33,6 @@ jobs:
           git submodule update --remote -f --init
           git checkout HEAD .gitmodules
         continue-on-error: true
-        
 
       - name: GitSubmoduleB2P
         run: |
@@ -41,7 +40,7 @@ jobs:
           git submodule add --force --name b2p-common https://${{ secrets.B2P_GIT_USER }}:${{ secrets.B2P_GIT_TOKEN }}@github.com/digital-ventures/b2p-common b2p-common
           git submodule update --remote -f --init
           git checkout HEAD .gitmodules
-        continue-on-error: true        
+        continue-on-error: true
 
       - name: DockerLogin
         uses: azure/docker-login@v1
@@ -85,7 +84,6 @@ jobs:
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
-          skaffold build
           skaffold build -q > build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
