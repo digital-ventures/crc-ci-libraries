@@ -27,13 +27,13 @@ jobs:
           # git config --global --add safe.directory $GITHUB_WORKSPACE
           git config --global --add safe.directory /__w/crc-${{ secrets.CRC_SERVICENAME }}/crc-${{ secrets.CRC_SERVICENAME }}
 
-      - name: GitSubmoduleCRC
-        run: |
-          rm -rf central-common
-          git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
-          git submodule update --remote -f --init
-          git checkout HEAD .gitmodules
-        continue-on-error: true
+      # - name: GitSubmoduleCRC
+      #   run: |
+      #     rm -rf central-common
+      #     git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
+      #     git submodule update --remote -f --init
+      #     git checkout HEAD .gitmodules
+      #   continue-on-error: true
 
       - name: GitSubmoduleB2P
         run: |
@@ -153,6 +153,7 @@ jobs:
           pwd
           ls -l
           cat .gitmodules
+          git status
 
       - name: PrepareRelease
         if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
