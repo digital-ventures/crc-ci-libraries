@@ -13,8 +13,8 @@ jobs:
       # - name: AddAPK
       #   run: apk --no-cache add git jq tar openssh
 
-      - name: AddAPT
-        run: apt install git jq tar openssh
+      # - name: AddAPT
+      #   run: apt install git jq tar openssh
 
       - name: CheckOut
         uses: actions/checkout@v3
