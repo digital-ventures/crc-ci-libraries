@@ -38,6 +38,7 @@ jobs:
         run: |
           cat .gitmodules | grep central
           if [[ $? == "0" ]]; then
+            echo "central-common"
             rm -rf central-common
             ls -l
             git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
@@ -45,6 +46,7 @@ jobs:
             cat .gitmodules
             git checkout HEAD .gitmodules
           else
+            echo "b2p-common"
             rm -rf b2p-common
             ls -l
             echo "1"
