@@ -29,7 +29,8 @@ jobs:
       
       - name: GitSubmodule
         run: |
-          git pull --recurse-submodules
+          # git pull --recurse-submodules
+          git submodule update --remote --no-fetch --force
 
       # - name: GitSubmodule
       #   run: |
