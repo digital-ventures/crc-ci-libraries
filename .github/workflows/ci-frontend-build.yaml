@@ -128,8 +128,7 @@ jobs:
           npm install --legacy-peer-deps
           npm install -g release
           git add -A
-          git commit -m "update package-lock.json"
-          git status
+          git diff --cached --exit-code --quiet && echo "directory is clean, continue without commit changes" || git commit -m "update package-lock.json"
           npm run release
           echo "TAG_VERSION=$(jq -r ".version" package.json | sed 's/-SNAPSHOT.0//')" >> $GITHUB_ENV
           npm run prepare-snapshot
