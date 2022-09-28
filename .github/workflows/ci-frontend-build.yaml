@@ -50,13 +50,10 @@ jobs:
           # cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      - name: SetupCache
-        uses: c-hive/gha-npm-cache@v1
-
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      # - name: Dump GitHub context
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJson(github) }}
+      #   run: echo "$GITHUB_CONTEXT"
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER

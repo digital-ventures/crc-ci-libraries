@@ -31,6 +31,7 @@ jobs:
         run: |
           # git pull --recurse-submodules
           git submodule update --remote --no-fetch --force
+        continue-on-error: true
 
       # - name: GitSubmodule
       #   run: |
@@ -64,10 +65,10 @@ jobs:
         with:
           gradle-version: 7.2
         
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      # - name: Dump GitHub context
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJson(github) }}
+      #   run: echo "$GITHUB_CONTEXT"
 
 ##### Release overlay/dev
       - name: ManualBuildContainerImage
