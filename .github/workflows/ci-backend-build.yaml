@@ -30,20 +30,20 @@ jobs:
       
       - name: GitSubmodule
         run: |
+          rm -rf b2p-common
+          rm -rf central-common
+          git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
+          git submodule add --force --name b2p-common https://${{ secrets.B2P_GIT_USER }}:${{ secrets.B2P_GIT_TOKEN }}@github.com/digital-ventures/b2p-common b2p-common
+          git submodule update --remote -f --init
+          git checkout HEAD .gitmodules
+        continue-on-error: true
+
+      - name: GitSubmodule
+        run: |
           git submodule update --remote -f --init
           git pull --recurse-submodules
           git submodule update --remote --no-fetch --force
         continue-on-error: true
-
-      # - name: GitSubmodule
-      #   run: |
-      #     rm -rf b2p-common
-      #     rm -rf central-common
-      #     git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
-      #     git submodule add --force --name b2p-common https://${{ secrets.B2P_GIT_USER }}:${{ secrets.B2P_GIT_TOKEN }}@github.com/digital-ventures/b2p-common b2p-common
-      #     git submodule update --remote -f --init
-      #     git checkout HEAD .gitmodules
-      #   continue-on-error: true
 
       - name: DockerLogin
         uses: azure/docker-login@v1
