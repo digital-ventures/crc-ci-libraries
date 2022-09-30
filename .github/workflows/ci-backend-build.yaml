@@ -18,7 +18,7 @@ jobs:
         with: 
           ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
           ssh-strict: 'StrictHostKeyChecking=no'
-          submodules: true   #set-safe-directory option of checkout didn't work
+          submodules: false   #set-safe-directory option of checkout didn't work
           fetch-depth: 0
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
