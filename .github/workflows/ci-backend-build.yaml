@@ -115,8 +115,8 @@ jobs:
         run: |
           echo -e "\e[92m START UpdateDeploymentSnapshotTemplate \e[0m"
           source variables
-          # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+          # git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
           cd app-deployment
           # cd crc-app-deployment
           git checkout nonprd
@@ -132,10 +132,10 @@ jobs:
           retry=0
           while [ "${retry}" -lt 3 ]
           do
-            # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
-            git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+            # git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            # git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
             ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m ${ppResult}"
             if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
@@ -201,8 +201,8 @@ jobs:
         run: |
           echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
           source variables
-          # git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-          git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+          git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+          # git clone https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
           cd app-deployment
           # cd crc-app-deployment
           git checkout nonprd
@@ -218,10 +218,10 @@ jobs:
           retry=0
           while [ "${retry}" -lt 3 ]
           do
-            # git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            # git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-app-deployment.git
-            git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
-            git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            git pull https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+            git push https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
+            # git pull https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
+            # git push https://${{ secrets.CRC_GITLAB_USER }}:${{ secrets.CRC_GITLAB_TOKEN }}@gitlab.com/central-gitops/app-deployment.git
             ppResult=$?
             echo -e "\e[31m P&P Result \e[0m : \e[96m $ppResult";
             if [[ "${ppResult}" == "" || "${ppResult}" -eq 0 || -z "${ppResult}" ]]; then
