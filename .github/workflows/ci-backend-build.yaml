@@ -31,22 +31,24 @@ jobs:
       - name: CheckCRCSubmodule
         run: |
           echo "Check central-common"
-          cat .gitmodules | grep central-common > /dev/null
-          if [ $? == "0" ]; then
+          if cat .gitmodules | grep central-common > /dev/null ; then
             rm -rf central-common
             git submodule add --force --name central-common https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-common central-common
             echo -e "\e[92m central-common is added \e[0m"
+          else
+            echo -e "\e[31m central-common is not found \e[0m"
           fi
         continue-on-error: true
 
       - name: CheckB2PSubmodule
         run: |
           echo "Check b2p-common"
-          cat .gitmodules | grep b2p-common > /dev/null
-          if [ $? == "0" ]; then
+          if cat .gitmodules | grep b2p-common > /dev/null ; then
             rm -rf b2p-common
             git submodule add --force --name b2p-common https://${{ secrets.B2P_GIT_USER }}:${{ secrets.B2P_GIT_TOKEN }}@github.com/digital-ventures/b2p-common b2p-common
             echo -e "\e[92m b2p-common is added \e[0m"
+          else
+            echo -e "\e[31m b2p-common is not found \e[0m"
           fi
         continue-on-error: true
 
