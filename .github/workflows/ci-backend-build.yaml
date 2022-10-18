@@ -1,3 +1,4 @@
+name: Backend Build
 on:
   workflow_call:
 jobs:

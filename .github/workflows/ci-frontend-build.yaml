@@ -1,3 +1,4 @@
+name: Frontend Build
 on:
   workflow_call:
 jobs:
