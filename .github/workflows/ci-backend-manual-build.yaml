@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.CRC_ACR_TOKEN }}
 
       - name: BuildTools
-        uses: yokawasa/action-setup-kube-tools@v0.7.1
+        uses: yokawasa/action-setup-kube-tools@v0.9.2
         with:
           kustomize: '3.9.1' #'4.5.7'
           skaffold: '1.39.1'
