@@ -56,6 +56,12 @@ jobs:
       #     GITHUB_CONTEXT: ${{ toJson(github) }}
       #   run: echo "$GITHUB_CONTEXT"
 
+#### CodeScan
+      - name: BuildWithCodeScan
+        if: "contains(github.ref_name, 'SONAR')"
+        run: |
+          docker build -f DockerfileSonarqube . --build-arg SONARQUBE_HOST_URL=${{ secrets.CRC_SONARQUBE_HOST_URL }} --build-arg SONARQUBE_TOKEN=${{ secrets.CRC_SONARQUBE_TOKEN }} --build-arg CI_COMMIT_TAG=${{ github.ref_name }} --build-arg SERVICENAME=${{ secrets.CRC_SERVICENAME }}
+
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER
         # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
