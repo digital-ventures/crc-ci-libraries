@@ -93,13 +93,6 @@ jobs:
       #     GITHUB_CONTEXT: ${{ toJson(github) }}
       #   run: echo "$GITHUB_CONTEXT"
         
-##### SonarQubeScan
-      - name: SonarQubeScan
-        # if: contains(github.ref_name, 'SONAR')
-        if: github.ref_type == 'tag' && contains(github.ref_name, 'SONAR')
-        run:
-          ./gradlew sonar -Dsonar.login=${{ secrets.CRC_SONARQUBE_TOKEN }} -Dsonar.projectName=CRC-${{ secrets.CRC_SERVICENAME }} -Dsonar.projectKey=CRC-${{ secrets.CRC_SERVICENAME }} -Dsonar.projectVersion=${{ github.ref_name }} -Dsonar.host.url=${{ secrets.CRC_SONARQUBE_HOST_URL }}
-
 ##### Test
       - name: CleanTest
         if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
