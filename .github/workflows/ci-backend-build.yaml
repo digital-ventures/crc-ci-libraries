@@ -11,11 +11,11 @@ jobs:
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
     steps:
-      - name: AddAPK
-        run: apk --no-cache add git jq tar
+      - name: Update Repo
+        run: apk update && apk upgrade
 
-      - name: AddAPK openssh
-        run: apk --no-cache add openssh=8.6_p1-r3
+      - name: AddAPK
+        run: apk --no-cache add git jq tar openssh
 
       - name: CheckOut
         uses: actions/checkout@v3
