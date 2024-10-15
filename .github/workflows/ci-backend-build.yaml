@@ -114,7 +114,7 @@ jobs:
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
           # rm -rf ./src/main/resources/application.yml
           # rm -rf ./src/main/resources/application.properties
-          skaffold build
+          chmod 755 gradlew
           skaffold build -q > build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
