@@ -71,6 +71,7 @@ jobs:
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
+          skaffold build
           skaffold build -q > build.json
           echo -e "\e[92m FINISH BuildContainerSnapshotImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
@@ -144,6 +145,7 @@ jobs:
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
           echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
+          skaffold build --tag ${{ env.TAG_VERSION }}
           skaffold build -q --tag ${{ env.TAG_VERSION }} > build.json
           echo -e "\e[92m FINISH BuildContainerReleaseImage \e[0m"
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
