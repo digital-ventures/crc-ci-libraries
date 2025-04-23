@@ -107,7 +107,7 @@ jobs:
 
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER
-        # if: github.base_ref == 'deployment' && github.event_name == 'pull_request'
+        # if: github.base_ref == 'acr-testing' && github.event_name == 'pull_request'
         if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
@@ -125,13 +125,13 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentSnapshotTemplate #MERGED TRIGGER
-        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START UpdateDeploymentSnapshotTemplate \e[0m"
           source variables
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
           cd crc-devops-app-deployment
-          git checkout nonprd
+          git checkout acr-testing
           cd overlay/dev
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
@@ -166,17 +166,17 @@ jobs:
 
 ##### Test Before Release overlay/sit
       - name: GetTagVersion
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "TAG_VERSION=$(cat gradle.properties | grep 'SNAPSHOT' | sed 's/-SNAPSHOT//' | sed 's/version=//')" >> $GITHUB_ENV
 
       - name: TagVersion
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           echo "TAG_VERSION = ${{ env.TAG_VERSION }}"
 
       - name: PrepareRelease
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
@@ -189,7 +189,7 @@ jobs:
 
 ##### Release overlay/sit
       - name: BuildContainerReleaseImage
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START BuildContainerReleaseImage \e[0m"
@@ -208,7 +208,7 @@ jobs:
           echo SVC_NAME="${{ secrets.CRC_SERVICENAME }}" >> variables
 
       - name: UpdateDeploymentReleaseTemplate
-        if: github.ref == 'refs/heads/central-release' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         # if: github.event_name == 'push' && contains( github.ref, 'refs/tag' ) && contains(github.event.head_commit.message, 'Gradle Release Plugin')
         run: |
           echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
