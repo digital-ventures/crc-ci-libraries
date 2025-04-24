@@ -98,7 +98,7 @@ jobs:
         
 ##### Test
       - name: CleanTest
-        if: contains( github.ref, 'merge' ) && github.head_ref == 'deployment' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
+        if: contains( github.ref, 'merge' ) && github.head_ref == 'acr-testing' && github.base_ref == 'central-release' && github.event_name == 'pull_request'
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.2
