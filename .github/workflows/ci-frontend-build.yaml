@@ -163,6 +163,7 @@ jobs:
         run: |
           echo -e "\e[92m START UpdateDeploymentReleaseTemplate \e[0m"
           source variables
+          rm -rf crc-devops-app-deployment
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
           cd crc-devops-app-deployment
           git checkout acr-testing
