@@ -125,10 +125,10 @@ jobs:
 
 ##### Test Before Release overlay/sit
       - name: PrepareRelease
-        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push' && !(contains(github.event.head_commit.message, 'Gradle Release Plugin'))
         run: |
           git remote set-url origin https://github.com/${{ github.repository }}
-          git checkout central-release
+          git checkout acr-testing
           npm install --legacy-peer-deps
           npm install -g release
           git add -A
