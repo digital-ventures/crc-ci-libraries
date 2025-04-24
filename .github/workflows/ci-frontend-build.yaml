@@ -90,7 +90,7 @@ jobs:
           source variables
           git clone https://${{ secrets.CRC_GIT_USER }}:${{ secrets.CRC_GIT_TOKEN }}@github.com/digital-ventures/crc-devops-app-deployment.git
           cd crc-devops-app-deployment
-          git checkout nonprd
+          git checkout acr-testing
           cd overlay/dev
           kustomize edit set image ${IMG_NAME}=${IMG_NAME}:${IMG_VERSION}
           cd ../..
