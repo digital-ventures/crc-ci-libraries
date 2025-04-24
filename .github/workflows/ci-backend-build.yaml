@@ -108,7 +108,7 @@ jobs:
 ##### Release overlay/dev
       - name: BuildContainerSnapshotImage #MERGED TRIGGER
         # if: github.base_ref == 'acr-testing' && github.event_name == 'pull_request'
-        if: github.ref == 'refs/heads/deployment' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/acr-testing' && github.event_name == 'push'
         run: |
           echo -e "\e[92m START BuildContainerSnapshotImage \e[0m"
           # rm -rf ./src/main/resources/application.yml
