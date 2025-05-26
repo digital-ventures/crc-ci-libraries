@@ -10,6 +10,11 @@ jobs:
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
     steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver: docker-container
+
       - name: Update Repo
         run: apk update && apk upgrade
 
