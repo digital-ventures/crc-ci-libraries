@@ -25,13 +25,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CRC_GIT_TOKEN }}
 
-      # Add buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-          buildkitd-flags: --debug
-
       - name: GitConfig
         run: |
           git config --global user.name ${{ secrets.CRC_GIT_USER }}
@@ -74,6 +67,10 @@ jobs:
           git submodule update --remote -f --init
           git checkout HEAD .gitmodules
         continue-on-error: true
+
+      # Add buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: DockerLogin
         uses: azure/docker-login@v1
