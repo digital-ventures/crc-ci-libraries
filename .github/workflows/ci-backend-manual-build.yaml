@@ -10,11 +10,6 @@ jobs:
     # container: openjdk:18-jdk-alpine3.15
     # container: openjdk:15-jdk-alpine3.12
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver: docker-container
-
       - name: Update Repo
         run: apk update && apk upgrade
 
@@ -29,6 +24,13 @@ jobs:
           submodules: false   #set-safe-directory option of checkout didn't work
           fetch-depth: 0
           token: ${{ secrets.CRC_GIT_TOKEN }}
+
+      # Add buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          buildkitd-flags: --debug
 
       - name: GitConfig
         run: |
