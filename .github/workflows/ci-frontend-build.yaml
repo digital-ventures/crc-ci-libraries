@@ -3,9 +3,14 @@ on:
   workflow_call:
 jobs:
   BuildAndRelease:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
     #runs-on: gha-runner-scale-set
-    container: node:14.15.4-alpine3.12
+    runs-on: arc-runner-set
+    #container: openjdk:17-jdk-alpine3.14
+    container:
+        image: node:14.15.4-alpine3.12
+        options: --privileged    
+    #container: node:14.15.4-alpine3.12
     env: 
       NEXUS_NAME: nexus-central
     steps:
