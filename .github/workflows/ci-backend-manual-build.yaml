@@ -104,7 +104,7 @@ jobs:
           echo -e "\e[92m START ManualBuildContainerImage \e[0m"
           # rm -rf ./src/main/resources/application.yml
           # rm -rf ./src/main/resources/application.properties
-          skaffold build --tag ${{ github.ref_name }} --output result.json -v debug --timestamps 2>&1  > build.json
+          skaffold build --tag ${{ github.ref_name }} --output build.json -v debug
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
           echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
