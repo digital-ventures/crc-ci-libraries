@@ -105,7 +105,6 @@ jobs:
           # rm -rf ./src/main/resources/application.yml
           # rm -rf ./src/main/resources/application.properties
           skaffold build --tag ${{ github.ref_name }} -v debug > build.json
-          cat build.json
           IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
           IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
           echo -e "\e[92m ${IMG_NAME}:${IMG_VERSION} \e[0m"
