@@ -13,7 +13,7 @@ jobs:
     runs-on: arc-runner-set
     #container: openjdk:17-jdk-alpine3.14
     container:
-        image: amazoncorretto:17-jdk-alpine3.14
+        image: amazoncorretto:17-alpine3.14-jdk
         options: --privileged        
     steps:
       - name: Update Repo
