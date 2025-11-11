@@ -13,7 +13,7 @@ jobs:
     runs-on: arc-runner-set
     #container: openjdk:17-jdk-alpine3.14
     container:
-        image: b2papp.azurecr.io/lib/amazoncorretto:17-jdk-alpine3.14
+        image: amazoncorretto:17-jdk-alpine3.14
         options: --privileged        
     steps:
       - name: Update Repo
