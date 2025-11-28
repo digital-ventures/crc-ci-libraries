@@ -6,7 +6,7 @@ jobs:
     runs-on: arc-runner-set
     #runs-on: gha-runner-scale-set
     #container: node:14.15.4-alpine3.12
-    container: node:24.11.1-alpine3.22
+    container: node:24.11.1
     steps:
       - name: Update Repo
         run: apk update && apk upgrade
