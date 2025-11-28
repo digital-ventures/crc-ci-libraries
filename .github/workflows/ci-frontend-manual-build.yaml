@@ -5,7 +5,8 @@ jobs:
   BuildAndRelease:
     runs-on: arc-runner-set
     #runs-on: gha-runner-scale-set
-    container: node:14.15.4-alpine3.12
+    #container: node:14.15.4-alpine3.12
+    container: node:24.11.1-alpine3.22
     steps:
       - name: Update Repo
         run: apk update && apk upgrade
@@ -45,7 +46,7 @@ jobs:
       - name: SetupNodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: 14.15.4
+          node-version: 24.11.1
           cache-dependency-path: package-lock.json
 
       # - name: Dump GitHub context
