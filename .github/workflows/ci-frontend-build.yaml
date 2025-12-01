@@ -8,7 +8,7 @@ jobs:
     runs-on: arc-runner-set
     #container: openjdk:17-jdk-alpine3.14
     container:
-        image: node:14.15.4-alpine3.12
+        image: node:24.11.1-alpine3.22
         options: --privileged    
     #container: node:14.15.4-alpine3.12
     env: 
@@ -18,7 +18,7 @@ jobs:
         run: apk update && apk upgrade
 
       - name: AddAPK
-        run: apk --no-cache add git jq tar openssh docker-cli
+        run: apk --no-cache add git jq tar openssh docker-cli docker-cli-buildx
 
       - name: CheckOut
         uses: actions/checkout@v3
@@ -55,7 +55,7 @@ jobs:
       - name: SetupNodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: 14.15.4
+          node-version: 24.11.1
           # cache: 'npm'
           cache-dependency-path: package-lock.json
 
