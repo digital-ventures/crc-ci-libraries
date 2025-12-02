@@ -20,21 +20,6 @@ jobs:
     - name: AddAPK
       run: apk --no-cache add git jq tar openssh docker-cli
 
-    - name: Install Docker and Buildx (Global Path)
-      run: |
-        apk --no-cache add curl git libc6-compat
-        rm -f /usr/bin/docker /usr/local/bin/docker
-        curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-26.1.3.tgz
-        tar xzvf docker-26.1.3.tgz --strip 1 -C /usr/local/bin docker/docker
-        rm docker-26.1.3.tgz
-        chmod +x /usr/local/bin/docker
-        mkdir -p /usr/local/lib/docker/cli-plugins
-        curl -SL https://github.com/docker/buildx/releases/download/v0.14.0/buildx-v0.14.0.linux-amd64 -o /usr/local/lib/docker/cli-plugins/docker-buildx
-        chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
-
-        echo "Check Version:"
-        docker buildx version
-
     - name: CheckOut
       uses: actions/checkout@v3
       with:
