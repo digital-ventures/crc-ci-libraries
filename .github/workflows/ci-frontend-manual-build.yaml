@@ -64,11 +64,11 @@ jobs:
         kubectl: '1.17.8' #'1.20.2'
         yq: '4.7.1'
 
-    - name: SetupNodeJS
-      uses: actions/setup-node@v3
-      with:
-        node-version: 14.15.4
-        cache-dependency-path: package-lock.json
+    #- name: SetupNodeJS
+    #  uses: actions/setup-node@v3
+    #  with:
+    #    node-version: 14.15.4
+    #    cache-dependency-path: package-lock.json
 
     # - name: Dump GitHub context
     #   env:
