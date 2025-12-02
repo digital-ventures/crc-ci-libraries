@@ -14,9 +14,7 @@ jobs:
     - name: AddAPK
       run: |
           apk --no-cache add git jq tar openssh docker-cli
-          echo "Docker Client Version Before update:"
-          docker --version
-     
+    
       
     - name: Install Compatible Docker CLI
       run: |
@@ -69,6 +67,8 @@ jobs:
     #   run: echo "$GITHUB_CONTEXT"
 
     - name: ManualBuildContainerImage
+      env:
+          DOCKER_BUILDKIT: 0
       if: contains( github.ref, 'refs/tags' ) && github.event_name == 'workflow_dispatch'
       run: |
         echo -e "\e[92m START ManualBuildContainerImage \e[0m"
