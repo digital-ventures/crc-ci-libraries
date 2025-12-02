@@ -13,7 +13,7 @@ jobs:
 
     - name: AddAPK
       run: |
-          apk --no-cache add git jq tar openssh docker-cli docker-cli-buildx 
+          apk --no-cache add git jq tar openssh docker-cli docker-cli-buildx
           echo "Docker Client Version Before update:"
           docker --version
      
