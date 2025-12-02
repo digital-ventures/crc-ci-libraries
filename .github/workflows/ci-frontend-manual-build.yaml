@@ -6,65 +6,64 @@ jobs:
     runs-on: arc-runner-set
     #runs-on: gha-runner-scale-set
     #container: node:14.15.4-alpine3.12
-    container: node:24.11.1-alpine3.22
+    container: node:14.15.4-alpine3.12
     steps:
-      - name: Update Repo
-        run: apk update && apk upgrade
+    - name: Update Repo
+      run: apk update && apk upgrade
 
-      - name: AddAPK
-        run: apk --no-cache add git jq tar openssh docker-cli docker-cli-buildx
+    - name: AddAPK
+      run: apk --no-cache add git jq tar openssh docker-cli
 
-      - name: CheckOut
-        uses: actions/checkout@v3
-        with: 
-          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          ssh-strict: 'StrictHostKeyChecking=no'
+    - name: CheckOut
+      uses: actions/checkout@v3
+      with:
+        ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+        ssh-strict: 'StrictHostKeyChecking=no'
 
-      - name: GitConfig
-        run: |
-          git config --global user.name ${{ secrets.CRC_GIT_USER }}
-          git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
-          git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      
-      - name: DockerLogin
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.CRC_ACR_REGISTRY }}
-          username: ${{ secrets.CRC_ACR_USER }}
-          password: ${{ secrets.CRC_ACR_TOKEN }}
-          
-      - name: BuildTools
-        uses: yokawasa/action-setup-kube-tools@v0.9.2
-        with:
-          kustomize: '3.9.1' #'4.5.7'
-          skaffold: '1.39.1'
-          # skaffold: '1.17.2' #'1.39.1'
-          helm: '3.9.4'
-          kubectl: '1.17.8' #'1.20.2'
-          yq: '4.7.1'
+    - name: GitConfig
+      run: |
+        git config --global user.name ${{ secrets.CRC_GIT_USER }}
+        git config --global user.email ${{ secrets.CRC_GIT_USER }}@dv.co.th
+        git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
-      - name: SetupNodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: 24.11.1
-          cache-dependency-path: package-lock.json
+    - name: DockerLogin
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.CRC_ACR_REGISTRY }}
+        username: ${{ secrets.CRC_ACR_USER }}
+        password: ${{ secrets.CRC_ACR_TOKEN }}
 
-      # - name: Dump GitHub context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJson(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
+    - name: BuildTools
+      uses: yokawasa/action-setup-kube-tools@v0.9.2
+      with:
+        kustomize: '3.9.1' #'4.5.7'
+        skaffold: '1.39.1'
+        # skaffold: '1.17.2' #'1.39.1'
+        helm: '3.9.4'
+        kubectl: '1.17.8' #'1.20.2'
+        yq: '4.7.1'
 
-      - name: ManualBuildContainerImage
-        if: contains( github.ref, 'refs/tags' ) && github.event_name == 'workflow_dispatch'
-        run: |
-          echo -e "\e[92m START ManualBuildContainerImage \e[0m"
-          echo "TAG_VERSION = ${{ github.ref_name }}"
-          skaffold build --tag ${{ github.ref_name }}
-          echo -e "\e[92m FINISH ManualBuildContainerImage \e[0m"
-          IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
-          IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
-          IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
-          echo IMG_NAME="${IMG_NAME}"
-          echo IMG_WITH_TAG="${IMG_WITH_TAG}"
-          echo IMG_VERSION="${IMG_VERSION}"
-          
+    - name: SetupNodeJS
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14.15.4
+        cache-dependency-path: package-lock.json
+
+    # - name: Dump GitHub context
+    #   env:
+    #     GITHUB_CONTEXT: ${{ toJson(github) }}
+    #   run: echo "$GITHUB_CONTEXT"
+
+    - name: ManualBuildContainerImage
+      if: contains( github.ref, 'refs/tags' ) && github.event_name == 'workflow_dispatch'
+      run: |
+        echo -e "\e[92m START ManualBuildContainerImage \e[0m"
+        echo "TAG_VERSION = ${{ github.ref_name }}"
+        skaffold build --tag ${{ github.ref_name }}
+        echo -e "\e[92m FINISH ManualBuildContainerImage \e[0m"
+        IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
+        IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
+        IMG_VERSION=$(echo ${IMG_WITH_TAG}  | cut -d ":" -f 2 | cut -d "@" -f 1)
+        echo IMG_NAME="${IMG_NAME}"
+        echo IMG_WITH_TAG="${IMG_WITH_TAG}"
+        echo IMG_VERSION="${IMG_VERSION}"
