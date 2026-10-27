@@ -8,7 +8,7 @@ jobs:
     runs-on: arc-runner-set
     #container: openjdk:17-jdk-alpine3.14
     container:
-      image: node:14.15.4-alpine3.12
+      image: node:14.21.3-alpine3.17
       options: --privileged
     #container: node:14.15.4-alpine3.12
     env:
