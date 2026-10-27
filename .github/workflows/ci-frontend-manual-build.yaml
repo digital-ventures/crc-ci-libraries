@@ -82,6 +82,7 @@ jobs:
         echo "TAG_VERSION = ${{ github.ref_name }}"
         export DOCKER_API_VERSION=1.45
         skaffold build --tag ${{ github.ref_name }} > build.json
+        cat build.json
         echo -e "\e[92m FINISH ManualBuildContainerImage \e[0m"
         IMG_NAME=$(jq -r ".builds[0].imageName" build.json)
         IMG_WITH_TAG=$(jq -r ".builds[0].tag" build.json)
